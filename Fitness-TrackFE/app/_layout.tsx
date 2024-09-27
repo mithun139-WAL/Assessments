@@ -34,28 +34,8 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack initialRouteName="signUpScreen">
-          <Stack.Screen name="signUpScreen" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="getStarted"
-            options={{
-              headerShown: true,
-              headerStyle: {
-                backgroundColor: "#28a745",
-              },
-              headerTitle: "CREATE ACCOUNT",
-            }}
-          />
-          <Stack.Screen
-            name="loginScreen"
-            options={{
-              headerShown: true,
-              headerStyle: {
-                backgroundColor: "#28a745",
-              },
-              headerTitle: "LOGIN",
-            }}
-          />
+        <Stack initialRouteName="index">
+          <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen
             name="(tabs)"
             options={{

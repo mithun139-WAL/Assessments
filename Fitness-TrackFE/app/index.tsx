@@ -6,12 +6,18 @@ import { ThemedText } from "@/components/ThemedText";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useRouter } from "expo-router";
 import { useAuth } from "../context/AuthContext";
-const { signInWithGoogle, loading, error, userInfo } = useAuth();
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 const signUpScreen = () => {
   const headerHeight = useHeaderHeight();
   const router = useRouter();
+  const { signInWithGoogle, loading, error, userInfo } = useAuth();
+  const handleSignIn = () => {
+    signInWithGoogle();
+    // router.replace("/(tabs)")
+    console.log(AsyncStorage.getItem("@user"), "User Info");
+  }
 
   return (
     <ThemedView style={[styles.container, { paddingTop: headerHeight }]}>
@@ -24,7 +30,7 @@ const signUpScreen = () => {
         {error && <ThemedText style={styles.errorText}>{error}</ThemedText>}
         <CommonButton
           title="Login with Google"
-          onPress={signInWithGoogle}
+          onPress={handleSignIn}
           iconName="logo-google"
           iconPosition="left"
           iconColor="#28a745"
@@ -39,21 +45,6 @@ const signUpScreen = () => {
           iconStyle={{ marginRight: 10 }}
           disabled={false}
         />
-        <CommonButton
-          title="Get Started"
-          onPress={() => router.push("/getStarted")}
-          buttonStyle={{ backgroundColor: "#28a745", marginVertical: 20 }}
-          textStyle={{ fontSize: 18 }}
-          disabled={false}
-        />
-        <Pressable
-          onPress={() => router.push("/loginScreen")}
-          style={{ alignItems: "center" }}
-        >
-          <ThemedText style={styles.text}>
-            Already have an account? Login
-          </ThemedText>
-        </Pressable>
       </ThemedView>
     </ThemedView>
   );

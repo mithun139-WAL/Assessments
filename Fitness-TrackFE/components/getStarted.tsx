@@ -82,7 +82,7 @@ const getStarted = () => {
           disabled={disabled}
         />
          <Pressable
-          onPress={() => router.push('/loginScreen')}
+          onPress={() => console.log("pressed")}
           style={{ alignItems: "center" }}
         >
           <ThemedText style={styles.text}>
