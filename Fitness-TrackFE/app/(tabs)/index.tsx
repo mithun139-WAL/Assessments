@@ -1,14 +1,23 @@
-import { CommonButton } from "@/components/CommonButton";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
+import { CommonButton } from "@/components/commonComponents/CommonButton";
+import { ThemedText } from "@/components/commonComponents/ThemedText";
+import { ThemedView } from "@/components/commonComponents/ThemedView";
 import { StyleSheet } from "react-native";
-
+import { Colors } from '../../constants/Colors';
 
 export default function HomeScreen() {
-
+  const userName = "Alpha";
   return (
-    <ThemedView style={[styles.container]}>
-        <ThemedText style={styles.title}>Welcome!</ThemedText>
+    <ThemedView style={{ flex: 1, justifyContent: "space-between" }}>
+      <ThemedView style={styles.container}>
+        <ThemedText style={styles.title}>Good Morning, {userName}!</ThemedText>
+      </ThemedView>
+      <ThemedView style={styles.buttonContainer}>
+        <CommonButton
+          title="View All"
+          buttonStyle={styles.button}
+          textStyle={{ fontSize: 14, color: Colors.white, paddingVertical: 3 }}
+        />
+      </ThemedView>
     </ThemedView>
   );
 }
@@ -16,26 +25,22 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "space-between",
-    alignItems: 'center',
+    justifyContent: "flex-start",
   },
   title: {
-    fontSize: 32,
+    fontSize: 18,
     textTransform: "uppercase",
-    letterSpacing: 10,
-    paddingVertical: 40,
+    letterSpacing: 2,
+    paddingVertical: 20,
     fontWeight: "400",
+    paddingHorizontal: 10,
   },
   buttonContainer: {
+    marginBottom: 100,
     paddingHorizontal: 50,
   },
-  text: {
-    marginVertical: 30,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-  },
-  errorText: {
-    color: "red",
-    marginBottom: 10,
+  button: {
+    backgroundColor: "#28a745",
+    paddingVertical: 10,
   },
 });

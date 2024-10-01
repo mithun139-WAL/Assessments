@@ -1,7 +1,9 @@
-import { Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 import React from "react";
 import { Colors } from "@/constants/Colors";
-import { TabBarIcon } from "@/components/TabBarIcon";
+import { TabBarIcon } from "@/components/commonComponents/TabBarIcon";
+import { ThemedView } from "../../components/commonComponents/ThemedView";
+import { Pressable } from "react-native";
 
 export default function TabLayout() {
   return (
@@ -27,9 +29,62 @@ export default function TabLayout() {
         tabBarActiveBackgroundColor: Colors.blue,
         tabBarActiveTintColor: Colors.white,
         tabBarInactiveTintColor: Colors.grey,
-        headerShown: false,   
+        headerLeft: () => {
+          return (
+            <ThemedView>
+              <Pressable onPress={() => router.navigate("/profile")}>
+                <TabBarIcon name="person" style={{ marginStart: 20 }} />
+              </Pressable>
+            </ThemedView>
+          );
+        },
+        headerRight: () => {
+          return (
+            <ThemedView>
+              <Pressable onPress={() => router.navigate("/settings")}>
+                <TabBarIcon name="settings" style={{ marginEnd: 20 }} />
+              </Pressable>
+            </ThemedView>
+          );
+        },
       }}
     >
+      <Tabs.Screen
+        name="workouts"
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "stopwatch" : "stopwatch-outline"}
+              color={color}
+            />
+          ),
+          tabBarLabelStyle: {
+            display: "none",
+          },
+          tabBarItemStyle: {
+            width: 50,
+          },
+          headerTitle: "Workouts",
+        }}
+      />
+      <Tabs.Screen
+        name="dashboard"
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "stats-chart" : "stats-chart-outline"}
+              color={color}
+            />
+          ),
+          tabBarLabelStyle: {
+            display: "none",
+          },
+          tabBarItemStyle: {
+            width: 50,
+          },
+          headerTitle: "Activity",
+        }}
+      />
       <Tabs.Screen
         name="index"
         options={{
@@ -45,6 +100,43 @@ export default function TabLayout() {
           tabBarItemStyle: {
             width: 50,
           },
+          headerTitle: "Home",
+        }}
+      />
+      <Tabs.Screen
+        name="programmes"
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "clipboard" : "clipboard-outline"}
+              color={color}
+            />
+          ),
+          tabBarLabelStyle: {
+            display: "none",
+          },
+          tabBarItemStyle: {
+            width: 50,
+          },
+          headerTitle: "Programmes",
+        }}
+      />
+      <Tabs.Screen
+        name="bookmark"
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "bookmark" : "bookmark-outline"}
+              color={color}
+            />
+          ),
+          tabBarLabelStyle: {
+            display: "none",
+          },
+          tabBarItemStyle: {
+            width: 50,
+          },
+          headerTitle: "Bookmarks",
         }}
       />
     </Tabs>

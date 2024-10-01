@@ -1,9 +1,9 @@
 import { Pressable, StyleSheet, TextInput } from "react-native";
 import React, { useEffect, useState } from "react";
-import { ThemedView } from "@/components/ThemedView";
-import { ThemedText } from "@/components/ThemedText";
-import { CommonButton } from "@/components/CommonButton";
-import CommonTextInput from "@/components/CommonTextInput";
+import { ThemedView } from "@/components/commonComponents/ThemedView";
+import { ThemedText } from "@/components/commonComponents/ThemedText";
+import { CommonButton } from "@/components/commonComponents/CommonButton";
+import CommonTextInput from "@/components/commonComponents/CommonTextInput";
 import { router } from "expo-router";
 
 const getStarted = () => {

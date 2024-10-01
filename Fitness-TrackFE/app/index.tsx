@@ -1,12 +1,12 @@
 import { StyleSheet, Pressable } from "react-native";
 import React from "react";
-import { ThemedView } from "@/components/ThemedView";
-import { CommonButton } from "@/components/CommonButton";
-import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/commonComponents/ThemedView";
+import { CommonButton } from "@/components/commonComponents/CommonButton";
+import { ThemedText } from "@/components/commonComponents/ThemedText";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useRouter } from "expo-router";
 import { useAuth } from "../context/AuthContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const signUpScreen = () => {
@@ -14,9 +14,7 @@ const signUpScreen = () => {
   const router = useRouter();
   const { signInWithGoogle, loading, error, userInfo } = useAuth();
   const handleSignIn = () => {
-    signInWithGoogle();
-    // router.replace("/(tabs)")
-    console.log(AsyncStorage.getItem("@user"), "User Info");
+    router.push("/welcomescreen")
   }
 
   return (
@@ -29,7 +27,7 @@ const signUpScreen = () => {
       <ThemedView style={styles.buttonContainer}>
         {error && <ThemedText style={styles.errorText}>{error}</ThemedText>}
         <CommonButton
-          title="Login with Google"
+          title="Get Started"
           onPress={handleSignIn}
           iconName="logo-google"
           iconPosition="left"

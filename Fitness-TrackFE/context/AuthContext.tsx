@@ -16,7 +16,7 @@ import {
 import { auth } from "../firebaseConfig";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -68,7 +68,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const checkUser = async () => {
     try {
-      const userJSON = await AsyncStorage.getItem("@user");
+      const userJSON = await ReactNativeAsyncStorage.getItem("@user");
       const userData = userJSON ? JSON.parse(userJSON) : null;
       setUserInfo(userData);
     } catch (err) {
@@ -82,7 +82,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (user) {
         console.log("User", JSON.stringify(user));
         setUserInfo(user);
-        await AsyncStorage.setItem("@user", JSON.stringify(user));
+        await ReactNativeAsyncStorage.setItem("@user", JSON.stringify(user));
       } else {
         console.log("User not Authenticated");
       }
@@ -107,7 +107,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setLoading(true);
     try {
       await signOut(auth);
-      await AsyncStorage.removeItem("@user");
+      await ReactNativeAsyncStorage.removeItem("@user");
       setUserInfo(null);
     } catch (err) {
       setError("Error signing out: " + err);

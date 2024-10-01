@@ -37,6 +37,11 @@ export default function RootLayout() {
         <Stack initialRouteName="index">
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen
+            name="welcomescreen"
+            options={{ headerShown: false, headerTitle: "" }}
+          />
+          <Stack.Screen name="WorkOutList" options={{ headerTitle: "" }} />
+          <Stack.Screen
             name="(tabs)"
             options={{
               headerShown: false,

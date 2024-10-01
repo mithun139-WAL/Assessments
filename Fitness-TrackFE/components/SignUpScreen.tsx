@@ -1,8 +1,8 @@
 import { StyleSheet, Pressable } from "react-native";
 import React from "react";
-import { ThemedView } from "@/components/ThemedView";
-import { CommonButton } from "@/components/CommonButton";
-import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/commonComponents/ThemedView";
+import { CommonButton } from "@/components/commonComponents/CommonButton";
+import { ThemedText } from "@/components/commonComponents/ThemedText";
 
 const SignUpScreen = () => {
   return (
