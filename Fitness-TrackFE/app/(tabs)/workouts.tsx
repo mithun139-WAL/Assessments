@@ -1,10 +1,15 @@
 import React, { useState } from "react";
-import { StyleSheet, FlatList, Image, Pressable } from "react-native";
+import {
+  StyleSheet,
+  FlatList,
+  Image,
+  Pressable,
+  TextInput,
+} from "react-native";
 import { exercises } from "../../data/exercises";
 import { TabBarIcon } from "@/components/commonComponents/TabBarIcon";
 import { ThemedView } from "@/components/commonComponents/ThemedView";
 import { ThemedText } from "../../components/commonComponents/ThemedText";
-import CommonTextInput from "@/components/commonComponents/CommonTextInput";
 import { router } from "expo-router";
 import { useBookmarks } from "@/context/BookmarkContext";
 
@@ -26,12 +31,14 @@ const WorkoutScreen = () => {
   const [searchText, setSearchText] = useState<string>("");
   const [filteredExercises, setFilteredExercises] =
     useState<Exercise[]>(exercises);
-  
-    const { bookmarkedExercises, toggleBookmark } = useBookmarks();
+
+  const { bookmarkedExercises, toggleBookmark } = useBookmarks();
+
+  const [activeTab, setActiveTab] = useState<"ForYou" | "Browse">("Browse");
 
   const handleSearch = (text: string) => {
     setSearchText(text);
-    if (text.length > 3) {
+    if (text.length > 2) {
       const filteredData = exercises.filter((exercise) => {
         const lowerCaseText = text.toLowerCase();
         return (
@@ -49,7 +56,6 @@ const WorkoutScreen = () => {
       setFilteredExercises(exercises);
     }
   };
-
   const renderExerciseItem = ({ item }: { item: Exercise }) => (
     <Pressable
       style={styles.card}
@@ -69,25 +75,74 @@ const WorkoutScreen = () => {
         <ThemedText style={styles.level}>{item.level}</ThemedText>
       </ThemedView>
       <Pressable onPress={() => toggleBookmark(item.id)}>
-        <TabBarIcon name={bookmarkedExercises.includes(item.id) ? "bookmark" : "bookmark-outline"} size={18} />
+        <TabBarIcon
+          name={
+            bookmarkedExercises.includes(item.id)
+              ? "bookmark"
+              : "bookmark-outline"
+          }
+          size={18}
+        />
       </Pressable>
     </Pressable>
   );
 
   return (
     <ThemedView style={styles.container}>
-      <CommonTextInput
-        style={styles.searchBar}
-        placeholder="Search exercises by name, level, equipment, etc."
-        value={searchText}
-        onChangeText={handleSearch}
-      />
-      <FlatList
-        data={filteredExercises}
-        renderItem={renderExerciseItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContainer}
-      />
+      <ThemedView style={styles.menuBar}>
+        <Pressable onPress={() => setActiveTab("ForYou")}>
+          <ThemedText
+            style={[
+              styles.menuOption,
+              activeTab === "ForYou" && styles.activeMenuOption,
+            ]}
+          >
+            For You
+          </ThemedText>
+        </Pressable>
+        <Pressable onPress={() => setActiveTab("Browse")}>
+          <ThemedText
+            style={[
+              styles.menuOption,
+              activeTab === "Browse" && styles.activeMenuOption,
+            ]}
+          >
+            Browse
+          </ThemedText>
+        </Pressable>
+      </ThemedView>
+      {activeTab === "Browse" && (
+        <>
+          <ThemedView style={styles.searchContainer}>
+            <TabBarIcon
+              name="search"
+              size={18}
+              color="#ddd"
+              style={{ paddingEnd: 10 }}
+            />
+            <TextInput
+              style={styles.searchBar}
+              placeholder="Search exercises by name, level, equipment, etc."
+              value={searchText}
+              onChangeText={handleSearch}
+              placeholderTextColor="#ddd"
+            />
+          </ThemedView>
+          <FlatList
+            data={filteredExercises}
+            renderItem={renderExerciseItem}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.listContainer}
+          />
+        </>
+      )}
+      {activeTab === "ForYou" && (
+        <ThemedView style={styles.forYouContainer}>
+          <ThemedText style={styles.forYouText}>
+            This section is currently empty.
+          </ThemedText>
+        </ThemedView>
+      )}
     </ThemedView>
   );
 };
@@ -95,19 +150,38 @@ const WorkoutScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 20,
     backgroundColor: "#f8f8f8",
   },
-  searchBar: {
-    height: 40,
-    borderColor: "#ccc",
-    borderBottomWidth: 1,
-    paddingHorizontal: 18,
-    marginHorizontal: 15,
-    borderRadius: 5,
-    marginBottom: 35,
-    elevation: 1,
+  menuBar: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    paddingVertical: 10,
     backgroundColor: "#fff",
+    borderBottomColor: "#ccc",
+    borderBottomWidth: 1,
+  },
+  menuOption: {
+    fontSize: 16,
+    color: "#666",
+  },
+  activeMenuOption: {
+    color: "#000",
+    fontWeight: "bold",
+  },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    height: 40,
+    marginHorizontal: 15,
+    paddingHorizontal: 10,
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    marginBottom: 35,
+    marginTop: 20,
+    elevation: 3,
+  },
+  searchBar: {
+    flex: 1,
   },
   listContainer: {
     paddingHorizontal: 15,
@@ -144,6 +218,15 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 10,
+  },
+  forYouContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  forYouText: {
+    fontSize: 16,
+    color: "#888",
   },
 });
 
