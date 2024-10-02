@@ -6,6 +6,7 @@ import { ThemedView } from "@/components/commonComponents/ThemedView";
 import { ThemedText } from "../../components/commonComponents/ThemedText";
 import CommonTextInput from "@/components/commonComponents/CommonTextInput";
 import { router } from "expo-router";
+import { useBookmarks } from "@/context/BookmarkContext";
 
 type Exercise = {
   id: string;
@@ -25,6 +26,8 @@ const WorkoutScreen = () => {
   const [searchText, setSearchText] = useState<string>("");
   const [filteredExercises, setFilteredExercises] =
     useState<Exercise[]>(exercises);
+  
+    const { bookmarkedExercises, toggleBookmark } = useBookmarks();
 
   const handleSearch = (text: string) => {
     setSearchText(text);
@@ -65,8 +68,8 @@ const WorkoutScreen = () => {
         </ThemedText>
         <ThemedText style={styles.level}>{item.level}</ThemedText>
       </ThemedView>
-      <Pressable>
-        <TabBarIcon name="bookmark-outline" size={18} />
+      <Pressable onPress={() => toggleBookmark(item.id)}>
+        <TabBarIcon name={bookmarkedExercises.includes(item.id) ? "bookmark" : "bookmark-outline"} size={18} />
       </Pressable>
     </Pressable>
   );
@@ -103,7 +106,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     borderRadius: 5,
     marginBottom: 35,
-    elevation: 3,
+    elevation: 1,
     backgroundColor: "#fff",
   },
   listContainer: {
@@ -119,7 +122,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    elevation: 3,
+    elevation: 1,
   },
   cardContent: {
     flex: 1,
