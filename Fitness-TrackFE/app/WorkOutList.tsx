@@ -5,7 +5,7 @@ import {
   ScrollView,
   StyleSheet,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ThemedView } from "../components/commonComponents/ThemedView";
 import { ThemedText } from "../components/commonComponents/ThemedText";
 import { useLocalSearchParams } from "expo-router";
@@ -15,7 +15,6 @@ import { Colors } from "@/constants/Colors";
 import { TabBarIcon } from "@/components/commonComponents/TabBarIcon";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useBookmarks } from "@/context/BookmarkContext";
-
 
 const { width, height } = Dimensions.get("window");
 
@@ -34,6 +33,14 @@ const WorkOutList = () => {
       setCurrentImageIndex((prevIndex) => (prevIndex === 0 ? 1 : 0));
     }
   };
+
+  useEffect(() => {
+    const imageCount = selectedExercise.images.length;
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imageCount);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [selectedExercise.images.length]);
 
   return (
     <ThemedView style={styles.container}>
@@ -55,7 +62,10 @@ const WorkOutList = () => {
           colors={["rgba(0,0,0,0.5)", "#000"]}
           style={styles.infoContainer}
         >
-          <Pressable onPress={()=>toggleBookmark(selectedExercise.id)} style={styles.bookmark}>
+          <Pressable
+            onPress={() => toggleBookmark(selectedExercise.id)}
+            style={styles.bookmark}
+          >
             <TabBarIcon
               name={
                 bookmarkedExercises.includes(selectedExercise.id)

@@ -116,20 +116,21 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
   },
   exerciseName: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: "bold",
   },
   category: {
-    fontSize: 14,
+    fontSize: 10,
     color: "#666",
   },
   level: {
     fontSize: 12,
     color: "#aaa",
+    textTransform: 'capitalize',
   },
   thumbnail: {
     width: 80,
     height: 80,
-    borderRadius: 10,
+    borderRadius: 5,
   },
 });

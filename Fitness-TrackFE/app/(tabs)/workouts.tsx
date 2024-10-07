@@ -150,14 +150,12 @@ const WorkoutScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f8f8",
   },
   menuBar: {
     flexDirection: "row",
     justifyContent: "space-around",
     paddingVertical: 10,
-    backgroundColor: "#fff",
-    borderBottomColor: "#ccc",
+    borderBottomColor: "#ddd",
     borderBottomWidth: 1,
   },
   menuOption: {
@@ -188,36 +186,30 @@ const styles = StyleSheet.create({
   },
   card: {
     flexDirection: "row",
-    backgroundColor: "#fff",
-    borderRadius: 10,
     padding: 15,
-    marginBottom: 15,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 1,
   },
   cardContent: {
     flex: 1,
     paddingLeft: 15,
   },
   exerciseName: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 12,
+    fontWeight: "500",
+    letterSpacing: 1,
   },
   category: {
-    fontSize: 14,
+    fontSize: 10,
     color: "#666",
   },
   level: {
     fontSize: 12,
     color: "#aaa",
+    textTransform: 'capitalize',
   },
   thumbnail: {
-    width: 80,
-    height: 80,
-    borderRadius: 10,
+    width: 100,
+    height: 90,
+    borderRadius: 5, 
   },
   forYouContainer: {
     flex: 1,

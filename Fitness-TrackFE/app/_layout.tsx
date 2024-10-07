@@ -14,6 +14,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "../constants/Colors";
 import { AuthProvider } from "@/context/AuthContext";
 import { BookmarkProvider } from "@/context/BookmarkContext";
+import { WorkoutProvider } from "@/context/WorkoutContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -34,35 +35,37 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <BookmarkProvider>
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          <Stack initialRouteName="index">
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="welcomescreen"
-              options={{ headerShown: false, headerTitle: "" }}
-            />
-            <Stack.Screen
-              name="WorkOutList"
-              options={{
-                headerTransparent: true,
-                headerTitle: "",
-                headerTintColor: "#fff",
-              }}
-            />
-            <Stack.Screen
-              name="(tabs)"
-              options={{
-                headerShown: false,
-                headerTransparent: true,
-                headerTitle: "",
-              }}
-            />
-          </Stack>
-        </ThemeProvider>
-      </BookmarkProvider>
+      <WorkoutProvider>
+        <BookmarkProvider>
+          <ThemeProvider
+            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+          >
+            <Stack initialRouteName="index">
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="welcomescreen"
+                options={{ headerShown: false, headerTitle: "" }}
+              />
+              <Stack.Screen
+                name="WorkOutList"
+                options={{
+                  headerTransparent: true,
+                  headerTitle: "",
+                  headerTintColor: "#fff",
+                }}
+              />
+              <Stack.Screen
+                name="(tabs)"
+                options={{
+                  headerShown: false,
+                  headerTransparent: true,
+                  headerTitle: "",
+                }}
+              />
+            </Stack>
+          </ThemeProvider>
+        </BookmarkProvider>
+      </WorkoutProvider>
     </AuthProvider>
   );
 }
