@@ -10,7 +10,6 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarStyle: {
-          backgroundColor: Colors.aqua,
           borderTopWidth: 0,
           padding: 0,
           height: 70,
@@ -26,7 +25,6 @@ export default function TabLayout() {
           textAlignVertical: "center",
           width: "100%",
         },
-        tabBarActiveBackgroundColor: Colors.blue,
         tabBarActiveTintColor: Colors.white,
         tabBarInactiveTintColor: Colors.grey,
         headerLeft: () => {
@@ -42,7 +40,7 @@ export default function TabLayout() {
           return (
             <ThemedView>
               <Pressable onPress={() => router.navigate("/settings")}>
-                <TabBarIcon name="settings" style={{ marginEnd: 20 }} />
+                <TabBarIcon name="settings" style={{ right: 20 }} />
               </Pressable>
             </ThemedView>
           );

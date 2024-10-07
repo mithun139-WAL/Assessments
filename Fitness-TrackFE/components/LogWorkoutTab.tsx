@@ -1,19 +1,16 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  View,
-  FlatList,
-  Pressable,
-  Modal,
-  Button,
-} from "react-native";
+import { StyleSheet, FlatList, Pressable, Modal, Button } from "react-native";
 import { useWorkout } from "@/context/WorkoutContext";
 import { ThemedView } from "@/components/commonComponents/ThemedView";
 import { ThemedText } from "@/components/commonComponents/ThemedText";
 import { Picker } from "@react-native-picker/picker";
+import { muscleGroups, muscleExercises } from "../data/targetmucles";
+import { TabBarIcon } from "./commonComponents/TabBarIcon";
+import { Colors } from "@/constants/Colors";
 
 type ExerciseLog = {
   exercise: string;
+  muscle: string | undefined;
   sets: number;
   reps: number;
   weight: number;
@@ -21,10 +18,11 @@ type ExerciseLog = {
 };
 
 const LogWorkoutTab = () => {
-  const { exerciseLogs, addWorkoutLog, updateProgress } = useWorkout();
+  const { exerciseLogs, addWorkoutLog, updateProgress, removeWorkoutLog } =
+    useWorkout();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedMuscle, setSelectedMuscle] = useState<
-    keyof typeof muscleGroups | undefined
+    keyof typeof muscleExercises | undefined
   >();
   const [selectedExercise, setSelectedExercise] = useState<
     string | undefined
@@ -32,21 +30,11 @@ const LogWorkoutTab = () => {
   const [weight, setWeight] = useState<number>(0);
   const [reps, setReps] = useState<number>(0);
 
-  const muscleGroups = {
-    Abs: ["3/4 Sit-Up", "Floor Crunch"],
-    Back: ["Deadlift", "Lat Pulldown"],
-    Biceps: ["Bicep Curl", "Hammer Curls"],
-    Cardio: ["Running", "Cycling"],
-    Chest: ["Benchpress", "Dumbbell Press"],
-    Legs: ["Squats", "Lunges"],
-    Shoulders: ["Shoulder Press", "Dumbbell Press"],
-    Triceps: ["Tricep Pulldown", "Overhead Tricep Extension"],
-  };
-
   const handleAddWorkout = () => {
     if (selectedExercise) {
       const newLog: ExerciseLog = {
         exercise: selectedExercise,
+        muscle: selectedMuscle,
         sets: 1,
         reps: reps,
         weight: weight,
@@ -68,24 +56,39 @@ const LogWorkoutTab = () => {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText style={styles.header}>Workout Logs</ThemedText>
+      <ThemedText style={styles.header}> Log Your Workouts</ThemedText>
 
-      <FlatList
-        data={exerciseLogs}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.logItem}>
-            <ThemedText style={styles.exerciseName}>{item.exercise}</ThemedText>
-            <ThemedText style={styles.logDetails}>
-              Sets: {item.sets}, Reps: {item.reps}, Weight: {item.weight} lbs
-            </ThemedText>
-            <ThemedText style={styles.logDate}>Date: {item.date}</ThemedText>
-          </View>
-        )}
-      />
+      <ThemedView style={{ paddingVertical: 30 }}>
+        <FlatList
+          data={exerciseLogs}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <ThemedView style={styles.logItem}>
+              <ThemedView
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <ThemedText style={styles.exerciseName}>
+                  {item.exercise} - {item.muscle}
+                </ThemedText>
+                <Pressable onPress={() => removeWorkoutLog(item.id)}>
+                  <TabBarIcon name="trash" size={16} />
+                </Pressable>
+              </ThemedView>
+
+              <ThemedText style={styles.logDetails}>
+                Sets: {item.sets}, Reps: {item.reps}, Weight: {item.weight} lbs
+              </ThemedText>
+              <ThemedText style={styles.logDate}>Date: {item.date}</ThemedText>
+            </ThemedView>
+          )}
+        />
+      </ThemedView>
 
       <Pressable style={styles.addButton} onPress={() => setModalVisible(true)}>
-        <ThemedText style={styles.addButtonText}>+</ThemedText>
+        <ThemedText style={styles.addButtonText}>Log</ThemedText>
       </Pressable>
 
       <Modal
@@ -99,7 +102,7 @@ const LogWorkoutTab = () => {
             style={styles.closeButton}
             onPress={() => setModalVisible(false)}
           >
-            <ThemedText style={styles.saveButtonText}>X</ThemedText>
+            <TabBarIcon name="close-circle-outline" style={{ color: "#000" }} />
           </Pressable>
           <ThemedText style={styles.modalTitle}>Log New Workout</ThemedText>
 
@@ -111,7 +114,7 @@ const LogWorkoutTab = () => {
             }}
           >
             <Picker.Item label="Select Muscle Group" value={undefined} />
-            {Object.keys(muscleGroups).map((muscle) => (
+            {muscleGroups.map((muscle) => (
               <Picker.Item label={muscle} value={muscle} key={muscle} />
             ))}
           </Picker>
@@ -123,7 +126,7 @@ const LogWorkoutTab = () => {
             >
               <Picker.Item label="Select Exercise" value={undefined} />
               {selectedMuscle &&
-                muscleGroups[selectedMuscle].map((exercise) => (
+                muscleExercises[selectedMuscle].map((exercise) => (
                   <Picker.Item
                     label={exercise}
                     value={exercise}
@@ -135,7 +138,7 @@ const LogWorkoutTab = () => {
 
           {selectedExercise && (
             <>
-              <View style={styles.counterContainer}>
+              <ThemedView style={styles.counterContainer}>
                 <ThemedText>Weight (lbs): </ThemedText>
                 <Button
                   title="-"
@@ -146,9 +149,9 @@ const LogWorkoutTab = () => {
                   title="+"
                   onPress={() => setWeight((prev) => prev + 1)}
                 />
-              </View>
+              </ThemedView>
 
-              <View style={styles.counterContainer}>
+              <ThemedView style={styles.counterContainer}>
                 <ThemedText>Reps: </ThemedText>
                 <Button
                   title="-"
@@ -156,7 +159,7 @@ const LogWorkoutTab = () => {
                 />
                 <ThemedText style={styles.counterValue}>{reps}</ThemedText>
                 <Button title="+" onPress={() => setReps((prev) => prev + 1)} />
-              </View>
+              </ThemedView>
 
               <Pressable style={styles.saveButton} onPress={handleAddWorkout}>
                 <ThemedText style={styles.saveButtonText}>Add</ThemedText>
@@ -178,44 +181,38 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: "400",
     marginBottom: 10,
   },
   logItem: {
     padding: 15,
     marginVertical: 5,
-    backgroundColor: "#f1f1f1",
     borderRadius: 5,
   },
   exerciseName: {
     fontWeight: "bold",
     fontSize: 16,
-    color: "#000",
   },
-  logDetails: {
-    color: "#555",
-  },
+  logDetails: {},
   logDate: {
     color: "#777",
     fontSize: 12,
   },
   addButton: {
-    backgroundColor: "#007bff",
-    width: 60,
-    height: 60,
+    backgroundColor: Colors.blue,
+    width: 90,
+    height: 45,
     borderRadius: 30,
     justifyContent: "center",
     alignItems: "center",
     position: "absolute",
-    bottom: 30,
     right: 20,
-    elevation: 5,
-    paddingTop: 7,
+    marginTop: 5,
   },
   addButtonText: {
     color: "#fff",
     fontWeight: "400",
-    fontSize: 30,
+    fontSize: 16,
   },
   modalContainer: {
     flex: 1,
@@ -248,20 +245,17 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   saveButtonText: {
-    color: "#fff",
+    color: "#dc3545",
     textAlign: "center",
-    fontWeight: "bold",
+    fontWeight: "300",
+    fontSize: 14,
   },
   closeButton: {
-    backgroundColor: "#dc3545",
-    width: 30,
-    height: 30,
     borderRadius: 30,
     justifyContent: "center",
     alignItems: "center",
     position: "absolute",
     top: 10,
     right: 10,
-    elevation: 5,
   },
 });

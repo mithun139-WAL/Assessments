@@ -63,7 +63,6 @@ export default function WorkoutLoggingScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText style={styles.header}>Fitness Tracker</ThemedText>
       <ThemedView style={styles.tabContainer}>
         {["Log Workout", "Track Progress", "Set Goals"].map((tab) => (
           <Pressable

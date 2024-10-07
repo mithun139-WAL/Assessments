@@ -2,6 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type ExerciseLog = {
+  id: string;
+  muscle:string | undefined;
   exercise: string;
   sets: number;
   reps: number;
@@ -26,14 +28,23 @@ type WorkoutContextType = {
   exerciseLogs: ExerciseLog[];
   progressData: ProgressData[];
   goals: Goal[];
-  addWorkoutLog: (log: ExerciseLog) => void;
+  addWorkoutLog: (log: Omit<ExerciseLog, "id">) => void;
+  removeWorkoutLog: (logId: string) => void;
   updateProgress: (progress: ProgressData) => void;
-  setGoal: (goal: Goal) => void;
+  setGoal: (goal: Omit<Goal, "id">) => void;
   removeGoal: (goalId: string) => void;
   updateGoalProgress: (exerciseLog: ExerciseLog) => void;
 };
 
 const WorkoutContext = createContext<WorkoutContextType | undefined>(undefined);
+
+const generateUUID = () => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
 
 export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [exerciseLogs, setExerciseLogs] = useState<ExerciseLog[]>([]);
@@ -66,18 +77,24 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
     AsyncStorage.setItem("goals", JSON.stringify(goals));
   }, [goals]);
 
-
-  const addWorkoutLog = (log: ExerciseLog) => {
-    setExerciseLogs((prevLogs) => [...prevLogs, log]);
-    updateGoalProgress(log);
+  const addWorkoutLog = (log: Omit<ExerciseLog, "id">) => {
+    const newLog = { ...log, id: generateUUID() };
+    setExerciseLogs((prevLogs) => [...prevLogs, newLog]);
+    updateGoalProgress(newLog);
   };
 
-  const updateProgress = (progress: ProgressData) => {    
-    setProgressData((prevProgress) => [...prevProgress, progress]);
+  const removeWorkoutLog = (logId: string) => {
+    setExerciseLogs((prevLogs) => prevLogs.filter((log) => log.id !== logId));
   };
 
-  const setGoal = (goal: Goal) => {
-    setGoals((prevGoals) => [...prevGoals, goal]);
+  const updateProgress = (progress: ProgressData) => {
+    const newProgress = {...progress,  id: generateUUID()};
+    setProgressData((prevProgress) => [...prevProgress, newProgress]);
+  };
+
+  const setGoal = (goal: Omit<Goal, "id">) => {
+    const newGoal = { ...goal, id: generateUUID() };
+    setGoals((prevGoals) => [...prevGoals, newGoal]);
   };
 
   const removeGoal = (goalId: string) => {
@@ -85,7 +102,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const updateGoalProgress = (exerciseLog: ExerciseLog) => {
-    const targetMuscle = exerciseLog.exercise;
+    const targetMuscle = exerciseLog.muscle;
     setGoals((prevGoals) =>
       prevGoals.map((goal) => {
         if (goal.name === targetMuscle) {
@@ -107,6 +124,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
         progressData,
         goals,
         addWorkoutLog,
+        removeWorkoutLog,
         updateProgress,
         setGoal,
         removeGoal,

@@ -107,7 +107,7 @@ const WorkoutCarousel: React.FC<WorkoutCarouselProps> = ({
                 <ThemedView style={styles.carouselItem}>
                   <Video
                     style={styles.video}
-                    source={{ uri: item.video }}
+                    source={{uri:"https://player.vimeo.com/178052126"}}
                     useNativeControls
                     resizeMode={ResizeMode.COVER}
                     isLooping
@@ -180,9 +180,9 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   planTitle: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "bold",
-    marginVertical: 10,
+    marginVertical: 20,
     textAlign: "center",
   },
   carouselItem: {

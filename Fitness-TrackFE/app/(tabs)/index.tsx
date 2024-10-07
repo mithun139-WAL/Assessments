@@ -13,6 +13,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import workoutData from "../../data/workout.json";
 import WorkoutCarousel from "@/components/WorkoutCarousel";
 import { Dimensions, ScrollView, FlatList } from "react-native";
+import { Colors } from "../../constants/Colors";
 
 type Exercise = {
   id: string;
@@ -114,11 +115,6 @@ export default function HomeScreen() {
       style={styles.container}
       contentContainerStyle={{ justifyContent: "flex-start" }}
     >
-      <ThemedView>
-        <ThemedView>
-          <WorkoutCarousel exercises={exercises} plans={plans} />
-        </ThemedView>
-      </ThemedView>
       <ThemedView style={styles.recommendationsContainer}>
         <ThemedText style={styles.subtitle}>
           Today's Workout Recommendations
@@ -130,8 +126,15 @@ export default function HomeScreen() {
             renderItem={renderItem}
             horizontal
           />
+          <ThemedView>
+            <ThemedText style={styles.title}>Looking for more ?</ThemedText>
+            <Pressable style={{paddingBottom: 30}} onPress={() => router.navigate("/(tabs)/workouts")}>
+              <ThemedText style={styles.explore}>Explore Workouts</ThemedText>
+            </Pressable>
+          </ThemedView>
         </ThemedView>
       </ThemedView>
+      <WorkoutCarousel exercises={exercises} plans={plans} />
     </ScrollView>
   );
 }
@@ -139,26 +142,34 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
   },
   card: {
     alignItems: "center",
     justifyContent: "center",
-    width: 220,
+    width: 280,
   },
   title: {
-    fontSize: 22,
-    textTransform: "uppercase",
-    letterSpacing: 2,
+    fontSize: 26,
+    letterSpacing: 1,
     paddingVertical: 20,
     fontWeight: "600",
-    color: "#ddd",
+    marginVertical: 20,
+    marginHorizontal: 20,
+  },
+  explore: {
+    marginHorizontal: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 15,
+    backgroundColor: Colors.blue,
+    width: 200,
+    borderRadius: 30,
+    textAlign: "center",
   },
   subtitle: {
     fontSize: 20,
     fontWeight: "500",
-    marginBottom: 10,
-    color: "red",
+    marginVertical: 20,
+    marginHorizontal: 20,
   },
   recommendationsContainer: {
     marginBottom: 20,
@@ -167,7 +178,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     height: 300,
     margin: 10,
-    width: 200,
+    width: 250,
     borderRadius: 10,
     justifyContent: "flex-end",
     paddingVertical: 30,
@@ -175,7 +186,7 @@ const styles = StyleSheet.create({
   thumbnail: {
     height: 300,
     margin: 10,
-    width: 200,
+    width: 250,
     borderRadius: 10,
   },
   recommendationName: {

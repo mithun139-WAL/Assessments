@@ -41,9 +41,7 @@ import { ThemedView } from "@/components/commonComponents/ThemedView";
 import { useWorkout } from "@/context/WorkoutContext";
 
 const TrackProgressTab: React.FC = () => {
-  const { progressData } = useWorkout();
-  console.log(progressData);
-  
+  const { progressData } = useWorkout();  
 
   return (
     <ThemedView style={styles.container}>
@@ -73,7 +71,7 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: "400",
     marginBottom: 10,
     textAlign: "center",
   },
@@ -81,15 +79,9 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   progressItem: {
-    backgroundColor: "#f5f5f5",
     borderRadius: 8,
     padding: 15,
     marginVertical: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.5,
-    elevation: 3,
   },
   dateText: {
     fontSize: 16,
