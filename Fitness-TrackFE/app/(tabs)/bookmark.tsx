@@ -6,6 +6,7 @@ import { exercises } from "@/data/exercises";
 import { useBookmarks } from "@/context/BookmarkContext";
 import { TabBarIcon } from "@/components/commonComponents/TabBarIcon";
 import { router } from "expo-router";
+import { useWorkout } from "@/context/WorkoutContext";
 
 type Exercise = {
   id: string;
@@ -21,13 +22,27 @@ type Exercise = {
   images: any[];
 };
 
+type Workout = {
+  id: string;
+  name: string;
+  force?: string;
+  level: string;
+  mechanic?: string;
+  equipment?: string;
+  primaryMuscles: string[];
+  secondaryMuscles?: string[];
+  instructions: string[];
+  category: string;
+};
+
 const BookmarkScreen = () => {
   const { bookmarkedExercises, toggleBookmark } = useBookmarks();
+  const { workouts } = useWorkout();
 
-  const bookmarkedItems = exercises.filter((exercise) =>
-    bookmarkedExercises.includes(exercise.id)
-  );
-
+  const bookmarkedItems = [
+    ...exercises.filter((exercise) => bookmarkedExercises.includes(exercise.id)),
+    ...workouts.filter((workout) => bookmarkedExercises.includes(workout.id)),
+  ];
   if (bookmarkedItems.length === 0) {
     return (
       <ThemedView style={styles.emptyContainer}>
@@ -38,7 +53,11 @@ const BookmarkScreen = () => {
     );
   }
 
-  const renderExerciseItem = ({ item }: { item: Exercise }) => (
+  const isExercise = (item: any): item is Exercise => {
+    return item.images && Array.isArray(item.images);
+  };
+
+  const renderExerciseItem = ({ item }: { item: Exercise | Workout }) => (
     <Pressable
       style={styles.card}
       onPress={() =>
@@ -48,7 +67,13 @@ const BookmarkScreen = () => {
         })
       }
     >
-      <Image source={item.images[0]} style={styles.thumbnail} />
+      {isExercise(item) ? (
+        <Image source={item.images[0]} style={styles.thumbnail} />
+      ):
+      <Image
+              source={require("../../assets/images/logo-black.png")}
+              style={styles.thumbnail}
+            />}
       <ThemedView style={styles.cardContent}>
         <ThemedText style={styles.exerciseName}>{item.name}</ThemedText>
         <ThemedText style={styles.category}>
@@ -58,7 +83,11 @@ const BookmarkScreen = () => {
       </ThemedView>
       <Pressable onPress={() => toggleBookmark(item.id)}>
         <TabBarIcon
-          name={bookmarkedExercises.includes(item.id) ? "bookmark" : "bookmark-outline"}
+          name={
+            bookmarkedExercises.includes(item.id)
+              ? "bookmark"
+              : "bookmark-outline"
+          }
           size={18}
         />
       </Pressable>
@@ -83,7 +112,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 20,
-    backgroundColor: "#f8f8f8",
   },
   emptyContainer: {
     flex: 1,
@@ -101,15 +129,9 @@ const styles = StyleSheet.create({
   },
   card: {
     flexDirection: "row",
-    backgroundColor: "#fff",
     borderRadius: 10,
     padding: 15,
     marginBottom: 15,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 1,
   },
   cardContent: {
     flex: 1,
@@ -126,7 +148,7 @@ const styles = StyleSheet.create({
   level: {
     fontSize: 12,
     color: "#aaa",
-    textTransform: 'capitalize',
+    textTransform: "capitalize",
   },
   thumbnail: {
     width: 80,

@@ -11,6 +11,7 @@ import { ThemedView } from "@/components/commonComponents/ThemedView";
 import { ThemedText } from "@/components/commonComponents/ThemedText";
 import { Picker } from "@react-native-picker/picker";
 import { TabBarIcon } from "./commonComponents/TabBarIcon";
+import { Colors } from '../constants/Colors';
 
 const muscleGroups = {
   Abs: "Abs",
@@ -23,7 +24,7 @@ const muscleGroups = {
   Triceps: "Triceps",
 };
 
-const SetGoalsTab = () => {
+const SetGoalsTab=() => {
   const { goals, setGoal, removeGoal } = useWorkout();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [selectedMuscle, setSelectedMuscle] = useState<string | undefined>();
@@ -71,7 +72,7 @@ const SetGoalsTab = () => {
 
       <Pressable style={styles.addButton} onPress={() => setModalVisible(true)}>
         <ThemedText style={styles.addButtonText}>
-          <TabBarIcon name="add" />
+          <TabBarIcon name="add" style={{color: "#fff"}}/>
         </ThemedText>
       </Pressable>
 
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   addButton: {
-    backgroundColor: "#007bff",
+    backgroundColor: Colors.blue,
     width: 60,
     height: 60,
     borderRadius: 30,

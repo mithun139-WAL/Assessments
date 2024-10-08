@@ -1,53 +1,24 @@
-// import React from "react";
-// import { FlatList, StyleSheet } from "react-native";
-// import { ThemedView } from "@/components/commonComponents/ThemedView";
-// import { ThemedText } from "@/components/commonComponents/ThemedText";
-
-// type ProgressData = { date: string; totalWeight: number; totalReps: number };
-
-// const TrackProgressTab = ({
-//   progressData,
-// }: {
-//   progressData: ProgressData[];
-// }) => (
-//   <FlatList
-//     data={progressData}
-//     keyExtractor={(item, index) => index.toString()}
-//     renderItem={({ item }) => (
-//       <ThemedView style={styles.progressItem}>
-//         <ThemedText>Date: {item.date}</ThemedText>
-//         <ThemedText>Total Weight: {item.totalWeight} lbs</ThemedText>
-//         <ThemedText>Total Reps: {item.totalReps}</ThemedText>
-//       </ThemedView>
-//     )}
-//   />
-// );
-
-// const styles = StyleSheet.create({
-//   progressItem: {
-//     padding: 10,
-//     marginVertical: 5,
-//     backgroundColor: "#d1f7c4",
-//     borderRadius: 5,
-//   },
-// });
-
-// export default TrackProgressTab;
-
 import React from "react";
 import { StyleSheet, FlatList, View } from "react-native";
 import { ThemedText } from "@/components/commonComponents/ThemedText";
 import { ThemedView } from "@/components/commonComponents/ThemedView";
 import { useWorkout } from "@/context/WorkoutContext";
 
-const TrackProgressTab: React.FC = () => {
+const TrackProgressTab: React.FC<{ selectedDate: Date }> = ({ selectedDate }) => {
   const { progressData } = useWorkout();  
+  
+  const formatDate = (date: Date) =>
+  `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+  
+  const filteredProgress = progressData.filter(
+    (progress) => progress.date === formatDate(selectedDate)
+  );
 
   return (
     <ThemedView style={styles.container}>
       <ThemedText style={styles.header}>Workout Progress</ThemedText>
       <FlatList
-        data={progressData}
+        data={filteredProgress}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={styles.progressItem}>

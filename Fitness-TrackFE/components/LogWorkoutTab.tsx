@@ -17,7 +17,8 @@ type ExerciseLog = {
   date: string;
 };
 
-const LogWorkoutTab = () => {
+const LogWorkoutTab: React.FC<{ selectedDate: Date }> = ({ selectedDate }) => {
+  
   const { exerciseLogs, addWorkoutLog, updateProgress, removeWorkoutLog } =
     useWorkout();
   const [modalVisible, setModalVisible] = useState(false);
@@ -30,6 +31,9 @@ const LogWorkoutTab = () => {
   const [weight, setWeight] = useState<number>(0);
   const [reps, setReps] = useState<number>(0);
 
+  const formatDate = (date: Date) =>
+  `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;  
+
   const handleAddWorkout = () => {
     if (selectedExercise) {
       const newLog: ExerciseLog = {
@@ -38,7 +42,7 @@ const LogWorkoutTab = () => {
         sets: 1,
         reps: reps,
         weight: weight,
-        date: new Date().toLocaleDateString(),
+        date: formatDate(selectedDate),
       };
       updateProgress({
         date: newLog.date,
@@ -54,14 +58,18 @@ const LogWorkoutTab = () => {
     }
   };
 
+  const filteredLogs = exerciseLogs.filter(
+    (log) => log.date === formatDate(selectedDate)
+  );
+
   return (
     <ThemedView style={styles.container}>
       <ThemedText style={styles.header}> Log Your Workouts</ThemedText>
 
       <ThemedView style={{ paddingVertical: 30 }}>
         <FlatList
-          data={exerciseLogs}
-          keyExtractor={(item, index) => index.toString()}
+          data={filteredLogs}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <ThemedView style={styles.logItem}>
               <ThemedView

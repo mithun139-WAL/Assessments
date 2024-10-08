@@ -55,6 +55,12 @@ export default function RootLayout() {
                 }}
               />
               <Stack.Screen
+                name="customworkout"
+                options={{
+                  headerTitle: "Add Workout",
+                }}
+              />
+              <Stack.Screen
                 name="(tabs)"
                 options={{
                   headerShown: false,

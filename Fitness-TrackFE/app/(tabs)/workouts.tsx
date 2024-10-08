@@ -5,6 +5,7 @@ import {
   Image,
   Pressable,
   TextInput,
+  Dimensions,
 } from "react-native";
 import { exercises } from "../../data/exercises";
 import { TabBarIcon } from "@/components/commonComponents/TabBarIcon";
@@ -12,6 +13,10 @@ import { ThemedView } from "@/components/commonComponents/ThemedView";
 import { ThemedText } from "../../components/commonComponents/ThemedText";
 import { router } from "expo-router";
 import { useBookmarks } from "@/context/BookmarkContext";
+import { Colors } from "@/constants/Colors";
+import { useWorkout } from "../../context/WorkoutContext";
+
+const { width } = Dimensions.get("window");
 
 type Exercise = {
   id: string;
@@ -27,6 +32,19 @@ type Exercise = {
   images: any[];
 };
 
+type Workout = {
+  id: string;
+  name: string;
+  force?: string;
+  level: string;
+  mechanic?: string;
+  equipment?: string;
+  primaryMuscles: string[];
+  secondaryMuscles?: string[];
+  instructions: string[];
+  category: string;
+};
+
 const WorkoutScreen = () => {
   const [searchText, setSearchText] = useState<string>("");
   const [filteredExercises, setFilteredExercises] =
@@ -34,7 +52,9 @@ const WorkoutScreen = () => {
 
   const { bookmarkedExercises, toggleBookmark } = useBookmarks();
 
-  const [activeTab, setActiveTab] = useState<"ForYou" | "Browse">("Browse");
+  const [activeTab, setActiveTab] = useState<"Custom" | "Browse">("Browse");
+
+  const { workouts, removeWorkout } = useWorkout();
 
   const handleSearch = (text: string) => {
     setSearchText(text);
@@ -56,7 +76,11 @@ const WorkoutScreen = () => {
       setFilteredExercises(exercises);
     }
   };
-  const renderExerciseItem = ({ item }: { item: Exercise }) => (
+
+  const isExercise = (item: any): item is Exercise => {
+    return item.images && Array.isArray(item.images);
+  };
+  const renderExerciseItem = ({ item }: { item: Exercise | Workout }) => (
     <Pressable
       style={styles.card}
       onPress={() =>
@@ -66,15 +90,33 @@ const WorkoutScreen = () => {
         })
       }
     >
-      <Image source={item.images[0]} style={styles.thumbnail} />
+      {isExercise(item) ? (
+        <Image source={item.images[0]} style={styles.thumbnail} />
+      ) : null}
+
       <ThemedView style={styles.cardContent}>
-        <ThemedText style={styles.exerciseName}>{item.name}</ThemedText>
+        {isExercise(item) ? (
+          <ThemedText style={styles.exerciseName}>{item.name}</ThemedText>
+        ) : (
+          <ThemedView
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <ThemedText style={styles.exerciseName}>{item.name}</ThemedText>
+            <Pressable onPress={() => removeWorkout(item.id)}>
+              <TabBarIcon name="trash-outline" size={18} />
+            </Pressable>
+          </ThemedView>
+        )}
+
         <ThemedText style={styles.category}>
           {item.category.toUpperCase()}
         </ThemedText>
         <ThemedText style={styles.level}>{item.level}</ThemedText>
       </ThemedView>
-      <Pressable onPress={() => toggleBookmark(item.id)}>
+      <Pressable
+        onPress={() => toggleBookmark(item.id)}
+        style={{ paddingLeft: 10 }}
+      >
         <TabBarIcon
           name={
             bookmarkedExercises.includes(item.id)
@@ -90,14 +132,14 @@ const WorkoutScreen = () => {
   return (
     <ThemedView style={styles.container}>
       <ThemedView style={styles.menuBar}>
-        <Pressable onPress={() => setActiveTab("ForYou")}>
+        <Pressable onPress={() => setActiveTab("Custom")}>
           <ThemedText
             style={[
               styles.menuOption,
-              activeTab === "ForYou" && styles.activeMenuOption,
+              activeTab === "Custom" && styles.activeMenuOption,
             ]}
           >
-            For You
+            Custom
           </ThemedText>
         </Pressable>
         <Pressable onPress={() => setActiveTab("Browse")}>
@@ -136,12 +178,42 @@ const WorkoutScreen = () => {
           />
         </>
       )}
-      {activeTab === "ForYou" && (
-        <ThemedView style={styles.forYouContainer}>
-          <ThemedText style={styles.forYouText}>
-            This section is currently empty.
-          </ThemedText>
-        </ThemedView>
+      {activeTab === "Custom" && (
+        <>
+          {workouts?.length > 0 ? (
+            <ThemedView style={{ flex: 1 }}>
+              <FlatList
+                data={workouts}
+                renderItem={renderExerciseItem}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={styles.listContainer}
+              />
+            </ThemedView>
+          ) : (
+            <ThemedView
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <ThemedView style={styles.forYouContainer}>
+                <ThemedText style={styles.forYouText}>
+                  This section is currently empty.
+                </ThemedText>
+                <ThemedText style={styles.forYouText}>
+                  Click '+' to add a workout
+                </ThemedText>
+              </ThemedView>
+            </ThemedView>
+          )}
+          <Pressable
+            style={styles.addButton}
+            onPress={() => router.push("/customworkout")}
+          >
+            <TabBarIcon name="add" size={18} style={styles.addButtonText} />
+          </Pressable>
+        </>
       )}
     </ThemedView>
   );
@@ -154,17 +226,21 @@ const styles = StyleSheet.create({
   menuBar: {
     flexDirection: "row",
     justifyContent: "space-around",
-    paddingVertical: 10,
+    marginBottom: 10,
     borderBottomColor: "#ddd",
     borderBottomWidth: 1,
   },
   menuOption: {
     fontSize: 16,
-    color: "#666",
+    borderBottomWidth: 2,
+    borderColor: "transparent",
+    paddingBottom: 10,
+    textAlign: "center",
+    width: width * 0.4,
   },
   activeMenuOption: {
-    color: "#000",
     fontWeight: "bold",
+    borderColor: Colors.aqua,
   },
   searchContainer: {
     flexDirection: "row",
@@ -204,12 +280,12 @@ const styles = StyleSheet.create({
   level: {
     fontSize: 12,
     color: "#aaa",
-    textTransform: 'capitalize',
+    textTransform: "capitalize",
   },
   thumbnail: {
     width: 100,
     height: 90,
-    borderRadius: 5, 
+    borderRadius: 5,
   },
   forYouContainer: {
     flex: 1,
@@ -219,6 +295,23 @@ const styles = StyleSheet.create({
   forYouText: {
     fontSize: 16,
     color: "#888",
+  },
+  addButton: {
+    backgroundColor: Colors.blue,
+    width: 50,
+    height: 50,
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    bottom: 10,
+    right: 10,
+    elevation: 5,
+    margin: 15,
+  },
+  addButtonText: {
+    color: "#fff",
+    fontWeight: "400",
   },
 });
 

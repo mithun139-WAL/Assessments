@@ -1,68 +1,70 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Pressable } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ThemedView } from "@/components/commonComponents/ThemedView";
 import { ThemedText } from "@/components/commonComponents/ThemedText";
 import SetGoalsTab from "@/components/SetGoalsTab";
 import LogWorkoutTab from "../../components/LogWorkoutTab";
 import TrackProgressTab from "@/components/TrackProgressTab";
-
-type ExerciseLog = {
-  exercise: string;
-  sets: number;
-  reps: number;
-  weight: number;
-  date: string;
-};
-
-type ProgressData = {
-  date: string;
-  totalWeight: number;
-  totalReps: number;
-};
-
-type Goal = {
-  id: string;
-  name: string;
-  target: string;
-  progress: number;
-};
+import { TabBarIcon } from "../../components/commonComponents/TabBarIcon";
+import { Colors } from '../../constants/Colors';
 
 export default function WorkoutLoggingScreen() {
   const [activeTab, setActiveTab] = useState<string>("Log Workout");
-  const [exerciseLogs, setExerciseLogs] = useState<ExerciseLog[]>([]);
-  const [progressData, setProgressData] = useState<ProgressData[]>([]);
-  const [goals, setGoals] = useState<Goal[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const logs = await AsyncStorage.getItem("exerciseLogs");
-      const progress = await AsyncStorage.getItem("progressData");
-      const savedGoals = await AsyncStorage.getItem("goals");
+  const handlePrevDay = () => {
+    const previousDate = new Date(selectedDate);
+    previousDate.setDate(selectedDate.getDate() - 1);
+    setSelectedDate(previousDate);
+  };
+  const handleNextDay = () => {
+    const nextDate = new Date(selectedDate);
+    nextDate.setDate(selectedDate.getDate() + 1);
+    setSelectedDate(nextDate);
+  };
 
-      if (logs) setExerciseLogs(JSON.parse(logs));
-      if (progress) setProgressData(JSON.parse(progress));
-      if (savedGoals) setGoals(JSON.parse(savedGoals));
-    };
-
-    fetchData();
-  }, []);
-
-  const renderActiveTab = () => {
+  const renderActiveTab = (date: Date) => {    
     switch (activeTab) {
       case "Log Workout":
-        return <LogWorkoutTab />;
+        return <LogWorkoutTab selectedDate={date} />;
       case "Track Progress":
-        return <TrackProgressTab />;
+        return <TrackProgressTab selectedDate={date} />;
       case "Set Goals":
         return <SetGoalsTab />;
       default:
-        return <LogWorkoutTab />;
+        return <LogWorkoutTab selectedDate={date} />;
     }
   };
 
   return (
     <ThemedView style={styles.container}>
+      <ThemedView style={styles.headerContainer}>
+        <ThemedView style={styles.dateContainer}>
+          <Pressable onPress={handlePrevDay}>
+            <TabBarIcon name="arrow-back" size={24} style={styles.arrow} />
+          </Pressable>
+          <ThemedView style={styles.dateContainer}>
+            <ThemedText style={styles.day}>
+              {selectedDate.getDate().toString().padStart(2, "0")}
+            </ThemedText>
+            <ThemedText style={styles.dateText}>
+              {selectedDate.toLocaleDateString("en-US", {
+                month: "long",
+                year: "numeric",
+              })}
+            </ThemedText>
+            <ThemedText style={styles.dateText}>
+              {selectedDate.toLocaleDateString("en-US", {
+                weekday: "long",
+              })}
+            </ThemedText>
+          </ThemedView>
+          <Pressable onPress={handleNextDay}>
+            <TabBarIcon name="arrow-forward" size={24} style={styles.arrow} />
+          </Pressable>
+        </ThemedView>
+      </ThemedView>
+
       <ThemedView style={styles.tabContainer}>
         {["Log Workout", "Track Progress", "Set Goals"].map((tab) => (
           <Pressable
@@ -74,7 +76,7 @@ export default function WorkoutLoggingScreen() {
           </Pressable>
         ))}
       </ThemedView>
-      {renderActiveTab()}
+      {renderActiveTab(selectedDate)}
     </ThemedView>
   );
 }
@@ -90,9 +92,33 @@ const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginBottom: 10,
+    marginVertical: 10,
   },
   tab: { padding: 10, borderBottomWidth: 2, borderColor: "transparent" },
-  activeTab: { borderColor: "blue" },
+  activeTab: { borderColor: Colors.aqua },
   tabText: { fontSize: 16, fontWeight: "500" },
+  arrow: {
+    fontSize: 18,
+    paddingHorizontal: 20,
+  },
+  dateContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  dateText: {
+    paddingHorizontal: 5,
+  },
+  day: {
+    fontSize: 24,
+    fontWeight: "200",
+    paddingHorizontal: 5,
+    paddingTop: 5, 
+  },
+  headerContainer: {
+    marginBottom: 16,
+    paddingVertical: 16,
+    borderRadius: 5,
+    elevation: 1,
+  },
 });

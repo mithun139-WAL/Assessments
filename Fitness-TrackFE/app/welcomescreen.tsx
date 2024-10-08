@@ -6,7 +6,7 @@ import { router } from "expo-router";
 import CommonDropDown from "@/components/commonComponents/CommonDropDown";
 import { CommonButton } from "../components/commonComponents/CommonButton";
 
-export default function WelcomeScreen() {
+const WelcomeScreen = () => {
   const [name, setName] = useState<string>("");
   const [goal, setGoal] = useState<string>("");
   const [experience, setExperience] = useState<string>("");
@@ -111,3 +111,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
+
+export default WelcomeScreen;

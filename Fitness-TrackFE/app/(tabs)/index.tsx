@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   card: {
     alignItems: "center",
     justifyContent: "center",
-    width: 280,
+    width: 250,
   },
   title: {
     fontSize: 26,
@@ -161,9 +161,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 15,
     backgroundColor: Colors.blue,
+    color: Colors.white,
     width: 200,
     borderRadius: 30,
     textAlign: "center",
+    fontWeight: "500",
+    fontSize: 18,
   },
   subtitle: {
     fontSize: 20,
@@ -178,16 +181,14 @@ const styles = StyleSheet.create({
     position: "absolute",
     height: 300,
     margin: 10,
-    width: 250,
-    borderRadius: 10,
+    width: 240,
     justifyContent: "flex-end",
     paddingVertical: 30,
   },
   thumbnail: {
     height: 300,
     margin: 10,
-    width: 250,
-    borderRadius: 10,
+    width: 240,
   },
   recommendationName: {
     fontSize: 14,
