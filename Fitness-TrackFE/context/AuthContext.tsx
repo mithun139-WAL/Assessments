@@ -72,7 +72,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const userData = userJSON ? JSON.parse(userJSON) : null;
       setUserInfo(userData);
     } catch (err) {
-      console.log("error", err);
+      console.error(err);
     }
   };
 
@@ -80,18 +80,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     checkUser();
     const unSubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        console.log("User", JSON.stringify(user));
+        console.error("User", JSON.stringify(user));
         setUserInfo(user);
         await ReactNativeAsyncStorage.setItem("@user", JSON.stringify(user));
       } else {
-        console.log("User not Authenticated");
+        console.error("User not Authenticated");
       }
     });
     return () => unSubscribe();
   }, [auth]);
 
   const signInWithGoogle = async () => {
-    console.log("entered");
     setLoading(true);
     setError(null);
     try {

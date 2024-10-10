@@ -12,8 +12,8 @@ import { useTracking } from "@/context/TrackingContext";
 import { ThemedView } from "@/components/commonComponents/ThemedView";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "@/constants/Colors";
-import { ThemedText } from "./commonComponents/ThemedText";
-import { TabBarIcon } from "./commonComponents/TabBarIcon";
+import { ThemedText } from "../commonComponents/ThemedText";
+import { TabBarIcon } from "../commonComponents/TabBarIcon";
 
 type PhotoPreviewModalProps = {
   visible: boolean;
@@ -57,7 +57,6 @@ const PhotoPreviewModal: React.FC<PhotoPreviewModalProps> = ({
 
   const handleDelete = (id: string) => {
     removePhoto(id);
-    console.log("Pressed");
   };
 
   const renderItem = ({ item }: { item: Photo }) => (

@@ -9,7 +9,8 @@ type Coordinates = {
   longitude: number;
 };
 
-const LocationFetch: React.FC = () => {
+const LocationFetch: React.FC<{ onAddressFetch: (address: string) => void }> = ({ onAddressFetch }) => {
+
   const [displayCurrentAddress, setDisplayCurrentAddress] = useState<string>('Location Loading...');
   const [locationServicesEnabled, setLocationServicesEnabled] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
@@ -92,6 +93,7 @@ const LocationFetch: React.FC = () => {
       if (response && Array.isArray(response)) {
         for (let item of response) {
           let address = `${item.name}, ${item.street}, ${item.city}, ${item.postalCode}`;
+          let newAddress = `${item.city}, ${item.postalCode}`;
           setDisplayCurrentAddress(address || 'Address not found');
         }
       } else {

@@ -7,12 +7,14 @@ import { TabBarIcon } from "@/components/commonComponents/TabBarIcon";
 import PhotoPreview from "@/components/PhotoPreview";
 import { useTracking } from "@/context/TrackingContext";
 import { router } from "expo-router";
+import { Colors } from "@/constants/Colors";
 
 type Photo = {
   id: string;
   uri: string;
   date: string;
   title: string;
+  address?: string;
 };
 
 const generateUUID = () => {
@@ -46,6 +48,16 @@ const Camera = () => {
             Grant Permission
           </ThemedText>
         </Pressable>
+        <Pressable
+            onPress={() => router.navigate("/ProgressPhotos")}
+            style={styles.albumButton}
+          >
+            <TabBarIcon
+              name="albums-sharp"
+              size={30}
+              style={styles.captureText}
+            />
+          </Pressable>
       </ThemedView>
     );
   }
@@ -67,13 +79,14 @@ const Camera = () => {
   };
 
   const handleRetakePhoto = () => setPhoto(null);
-  const handleSavePhoto = (title: string) => {
+  const handleSavePhoto = (title: string, address: string) => {
     if (photo) {
       const newPhoto: Photo = {
         id: generateUUID(),
         uri: photo.uri,
         title: title,
         date: new Date().toISOString(),
+        address: address,
       };
       addPhoto(newPhoto);
       setPhoto(null);
@@ -153,6 +166,18 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginVertical: 10,
   },
+  albumButton: {
+    backgroundColor: Colors.blue,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    bottom: 30,
+    right: 20,
+  },
+
 });
 
 export default Camera;

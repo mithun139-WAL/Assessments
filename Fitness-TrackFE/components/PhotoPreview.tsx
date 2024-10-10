@@ -4,12 +4,21 @@ import {
   StyleSheet,
   SafeAreaView,
   TextInput,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import { ThemedView } from "./commonComponents/ThemedView";
 import { TabBarIcon } from "./commonComponents/TabBarIcon";
 import { Colors } from "@/constants/Colors";
 import { CameraCapturedPicture } from "expo-camera";
+import * as Location from "expo-location";
+import CommonTextInput from "./commonComponents/CommonTextInput";
+
+type Coordinates = {
+  latitude: number;
+  longitude: number;
+};
 
 const PhotoPreview = ({
   photo,
@@ -18,9 +27,125 @@ const PhotoPreview = ({
 }: {
   photo: CameraCapturedPicture;
   handleRetakePhoto: () => void;
-  handleSavePhoto: (title: string) => void;
+  handleSavePhoto: (title: string, address: string) => void;
 }) => {
   const [title, setTitle] = useState<string>("");
+  const [displayCurrentAddress, setDisplayCurrentAddress] =
+    useState<string>("");
+  const [locationServicesEnabled, setLocationServicesEnabled] =
+    useState<boolean>(false);
+  const [locationButtonState, setLocationButtonState] = useState<
+    "default" | "loading" | "fetched"
+  >("default");
+
+  const checkIfLocationEnabled = async (): Promise<void> => {
+    let enabled = await Location.hasServicesEnabledAsync();
+    if (!enabled) {
+      Alert.alert(
+        "Location Not Enabled",
+        "Please enable your Location services",
+        [
+          {
+            text: "Cancel",
+            onPress: () => console.log("Cancel Pressed"),
+            style: "cancel",
+          },
+          { text: "Enable", onPress: () => console.log("Enable Pressed") },
+        ]
+      );
+    }
+    setLocationServicesEnabled(enabled);
+  };
+
+  const getCurrentLocation = async (): Promise<void> => {
+    try {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission Denied",
+          "Allow the app to use location services",
+          [
+            {
+              text: "Cancel",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "cancel",
+            },
+            { text: "OK", onPress: () => console.log("OK Pressed") },
+          ]
+        );
+        return;
+      }
+
+      const { coords } = await Location.getCurrentPositionAsync();
+      if (coords) {
+        const { latitude, longitude } = coords;
+        console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+
+        await reverseGeocodeWithTimeout({ latitude, longitude });
+      }
+    } catch (error) {
+      console.error("Error getting location: ", error);
+      Alert.alert("Error", "Unable to fetch location. Please try again later.");
+    }
+  };
+
+  const reverseGeocodeWithTimeout = async (
+    coords: Coordinates
+  ): Promise<void> => {
+    try {
+      const retryLimit = 2;
+      let attempt = 0;
+      let response: Location.LocationGeocodedAddress[] | undefined;
+
+      while (attempt < retryLimit) {
+        try {
+          const reverseGeocodePromise = Location.reverseGeocodeAsync(coords);
+          const timeoutPromise = new Promise<never>((_, reject) =>
+            setTimeout(
+              () => reject(new Error("Geocoding request timed out")),
+              10000
+            )
+          );
+
+          response = (await Promise.race([
+            reverseGeocodePromise,
+            timeoutPromise,
+          ])) as Location.LocationGeocodedAddress[];
+
+          if (response && Array.isArray(response)) {
+            break;
+          }
+        } catch (error) {
+          attempt += 1;
+          console.warn(`Attempt ${attempt} failed: ${error}`);
+        }
+      }
+
+      if (response && Array.isArray(response)) {
+        for (let item of response) {
+          let address = `${item.name}, ${item.street}, ${item.city}, ${item.postalCode}`;
+          let newAddress = `${item.city}, ${item.postalCode}`;
+          setDisplayCurrentAddress(newAddress || "Address not found");
+        }
+      } else {
+        throw new Error("Unable to fetch address. All attempts failed.");
+      }
+    } catch (error) {
+      console.error("Reverse Geocoding Error: ", error);
+      setDisplayCurrentAddress(
+        "Unable to fetch address. Please try again later."
+      );
+    }
+  };
+
+  const handleLocation = async () => {
+    setLocationButtonState("loading");
+    await checkIfLocationEnabled();
+    await getCurrentLocation();
+    setLocationButtonState("fetched");
+  };
+
+  console.log("Address", displayCurrentAddress);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -30,21 +155,39 @@ const PhotoPreview = ({
           source={{ uri: "data:image/jpg;base64," + photo.base64 }}
         />
 
+        <ThemedView style={styles.titleContainer}>
+          <CommonTextInput
+            placeholder="Enter Title"
+            value={title}
+            onChangeText={setTitle}
+          />
+        </ThemedView>
         <ThemedView style={styles.buttonContainer}>
-          <ThemedView style={styles.titleContainer}>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Enter Title"
-              value={title}
-              onChangeText={setTitle}
-            />
-          </ThemedView>
           <Pressable style={styles.button} onPress={handleRetakePhoto}>
-            <TabBarIcon name="trash" size={24} style={{color: "red"}} />
+            <TabBarIcon name="trash" size={24} style={{ color: "red" }} />
+          </Pressable>
+          <Pressable style={styles.button} onPress={() => handleLocation()}>
+            {locationButtonState === "loading" ? (
+              <ActivityIndicator size="small" color="#0000ff" />
+            ) : locationButtonState === "fetched" ? (
+              <TabBarIcon
+                name="checkmark"
+                size={24}
+                style={{ color: "green" }}
+              />
+            ) : (
+              <TabBarIcon
+                name="location"
+                size={24}
+                style={{ color: Colors.blue }}
+              />
+            )}
           </Pressable>
           <Pressable
-            style={[styles.button, !title && styles.disabledButton, ]}
-            onPress={() => title && handleSavePhoto(title)}
+            style={[styles.button, !title && styles.disabledButton]}
+            onPress={() =>
+              title && handleSavePhoto(title, displayCurrentAddress)
+            }
             disabled={!title}
           >
             <TabBarIcon name="save" size={24} />
@@ -64,7 +207,7 @@ const styles = StyleSheet.create({
   },
   box: {
     width: "95%",
-    height: "80%",
+    height: "85%",
     borderRadius: 20,
     overflow: "hidden",
     backgroundColor: Colors.white,
@@ -82,7 +225,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     width: "100%",
-    marginVertical: 10,
+    paddingVertical: 10,
   },
   button: {
     justifyContent: "center",
@@ -92,14 +235,8 @@ const styles = StyleSheet.create({
   },
   disabledButton: { backgroundColor: "#ccc", opacity: 0.3 },
   titleContainer: {
-    width: "70%",
+    width: "100%",
     justifyContent: "center",
-  },
-  textInput: {
-    borderBottomColor: "darkgrey",
-    borderBottomWidth: 1,
-    paddingHorizontal: 10,
-    paddingVertical: 10,
   },
 });
 

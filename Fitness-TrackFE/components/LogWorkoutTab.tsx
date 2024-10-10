@@ -18,7 +18,6 @@ type ExerciseLog = {
 };
 
 const LogWorkoutTab: React.FC<{ selectedDate: Date }> = ({ selectedDate }) => {
-  
   const { exerciseLogs, addWorkoutLog, updateProgress, removeWorkoutLog } =
     useWorkout();
   const [modalVisible, setModalVisible] = useState(false);
@@ -32,7 +31,7 @@ const LogWorkoutTab: React.FC<{ selectedDate: Date }> = ({ selectedDate }) => {
   const [reps, setReps] = useState<number>(0);
 
   const formatDate = (date: Date) =>
-  `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;  
+    `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 
   const handleAddWorkout = () => {
     if (selectedExercise) {
@@ -148,29 +147,36 @@ const LogWorkoutTab: React.FC<{ selectedDate: Date }> = ({ selectedDate }) => {
             <>
               <ThemedView style={styles.counterContainer}>
                 <ThemedText>Weight (lbs): </ThemedText>
-                <Button
-                  title="-"
-                  onPress={() => setWeight((prev) => Math.max(0, prev - 1))}
-                />
-                <ThemedText style={styles.counterValue}>{weight}</ThemedText>
-                <Button
-                  title="+"
-                  onPress={() => setWeight((prev) => prev + 1)}
-                />
+                <ThemedView style={{flexDirection: "row", alignItems: "center"}}>
+                  <Pressable
+                    onPress={() => setWeight((prev) => Math.max(0, prev - 1))}
+                  >
+                    <TabBarIcon name="remove" size={16} style={styles.icon} />
+                  </Pressable>
+                  <ThemedText style={styles.counterValue}>{weight}</ThemedText>
+                  <Pressable onPress={() => setWeight((prev) => prev + 1)}>
+                    <TabBarIcon name="add" size={16} style={styles.icon} />
+                  </Pressable>
+                </ThemedView>
               </ThemedView>
 
               <ThemedView style={styles.counterContainer}>
                 <ThemedText>Reps: </ThemedText>
-                <Button
-                  title="-"
-                  onPress={() => setReps((prev) => Math.max(0, prev - 1))}
-                />
-                <ThemedText style={styles.counterValue}>{reps}</ThemedText>
-                <Button title="+" onPress={() => setReps((prev) => prev + 1)} />
+                <ThemedView style={{flexDirection: "row", alignItems: "center"}}>
+                  <Pressable
+                    onPress={() => setReps((prev) => Math.max(0, prev - 1))}
+                  >
+                    <TabBarIcon name="remove" size={16} style={styles.icon} />
+                  </Pressable>
+                  <ThemedText style={styles.counterValue}>{reps}</ThemedText>
+                  <Pressable onPress={() => setReps((prev) => prev + 1)}>
+                    <TabBarIcon name="add" size={16} style={styles.icon} />
+                  </Pressable>
+                </ThemedView>
               </ThemedView>
 
               <Pressable style={styles.saveButton} onPress={handleAddWorkout}>
-                <ThemedText style={styles.saveButtonText}>Add</ThemedText>
+                <ThemedText style={styles.saveButtonText}>Log Workout</ThemedText>
               </Pressable>
             </>
           )}
@@ -235,29 +241,33 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 15,
     textAlign: "center",
+    letterSpacing: 1.2,
   },
   counterContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    marginVertical: 10,
+    justifyContent: "space-between",
+    marginVertical: 20,
+    paddingHorizontal: 15,
+
   },
   counterValue: {
     marginHorizontal: 15,
     fontSize: 18,
   },
   saveButton: {
-    backgroundColor: "#28a745",
+    backgroundColor: Colors.aqua,
     padding: 15,
     borderRadius: 30,
     marginTop: 20,
   },
   saveButtonText: {
-    color: "#dc3545",
+    color: Colors.white,
     textAlign: "center",
-    fontWeight: "300",
+    fontWeight: "500",
     fontSize: 14,
   },
+  icon: {backgroundColor: Colors.blue, color: Colors.white, padding: 5, borderRadius: 30},
   closeButton: {
     borderRadius: 30,
     justifyContent: "center",

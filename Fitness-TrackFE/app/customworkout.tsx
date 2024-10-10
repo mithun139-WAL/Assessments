@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { StyleSheet, TextInput, Pressable, ScrollView } from "react-native";
+import { StyleSheet, TextInput, Pressable, ScrollView, Alert } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { ThemedText } from "@/components/commonComponents/ThemedText";
 import { ThemedView } from "@/components/commonComponents/ThemedView";
 import CommonTextInput from "@/components/commonComponents/CommonTextInput";
 import { useWorkout } from "@/context/WorkoutContext";
 import { router } from "expo-router";
+import { TabBarIcon } from "../components/commonComponents/TabBarIcon";
 
 const forceOptions = ["pull", "push", "static"];
 const levelOptions = ["beginner", "intermediate", "expert"];
@@ -78,7 +79,24 @@ const CustomWorkout = () => {
     });
   };
 
+  const validateForm = () => {
+    if (!name.trim()) {
+      Alert.alert("Validation Error", "Please enter an exercise name.");
+      return false;
+    }
+    if (!primaryMuscles[0].trim()) {
+      Alert.alert("Validation Error", "Please enter at least one primary muscle.");
+      return false;
+    }
+    if (!instructions[0].trim()) {
+      Alert.alert("Validation Error", "Please enter at least one instruction.");
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = () => {
+    if (!validateForm()) return;
     const newWorkout = {
       id: name.replace(/\s+/g, "_"),
       name,
@@ -90,7 +108,7 @@ const CustomWorkout = () => {
       secondaryMuscles,
       instructions,
       category,
-    };    
+    };
     addWorkout(newWorkout);
     setName("");
     setForce("pull");
@@ -111,7 +129,12 @@ const CustomWorkout = () => {
     setState: React.Dispatch<React.SetStateAction<string[]>>
   ) => (
     <ThemedView style={styles.arrayContainer}>
+      <ThemedView style={{flexDirection: "row", alignItems: "center", justifyContent:  "space-between", marginBottom: 10}}>
       <ThemedText style={styles.label}>{label}:</ThemedText>
+      <Pressable onPress={() => addField(setState)} style={styles.addButton}>
+        <TabBarIcon name="checkmark" size={16} style={styles.addButtonText} />
+      </Pressable>
+      </ThemedView>
       {array.map((value, index) => (
         <ThemedView key={index} style={styles.arrayItem}>
           <TextInput
@@ -124,13 +147,15 @@ const CustomWorkout = () => {
             onPress={() => removeField(index, setState)}
             style={styles.removeButton}
           >
-            <ThemedText style={styles.removeButtonText}>Remove</ThemedText>
+            <TabBarIcon
+              name="close"
+              size={16}
+              style={styles.removeButtonText}
+            />
           </Pressable>
         </ThemedView>
       ))}
-      <Pressable onPress={() => addField(setState)} style={styles.addButton}>
-        <ThemedText style={styles.addButtonText}>Add {label}</ThemedText>
-      </Pressable>
+      
     </ThemedView>
   );
 
@@ -199,11 +224,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
     padding: 10,
     marginBottom: 15,
+    width: "70%",
   },
   dropdownContainer: {
     marginVertical: 10,
@@ -223,17 +248,18 @@ const styles = StyleSheet.create({
     marginTop: 10,
     backgroundColor: "#007bff",
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 30,
     alignItems: "center",
+    right: 10,
   },
   addButtonText: {
     color: "#fff",
   },
   removeButton: {
-    marginLeft: 10,
+    marginHorizontal: 15,
     backgroundColor: "#ff6347",
     padding: 5,
-    borderRadius: 5,
+    borderRadius: 30,
   },
   removeButtonText: {
     color: "#fff",

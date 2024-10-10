@@ -98,7 +98,7 @@ const TabLayout = () => {
           tabBarItemStyle: {
             width: 50,
           },
-          headerTitle: "Activity",
+          headerTitle: "Capture",
         }}
       />
       
@@ -117,7 +117,7 @@ const TabLayout = () => {
           tabBarItemStyle: {
             width: 50,
           },
-          headerTitle: "Programmes",
+          headerTitle: "Tasks",
         }}
       />
       <Tabs.Screen

@@ -11,7 +11,7 @@ import { ThemedView } from "@/components/commonComponents/ThemedView";
 import { ThemedText } from "@/components/commonComponents/ThemedText";
 import { Picker } from "@react-native-picker/picker";
 import { TabBarIcon } from "./commonComponents/TabBarIcon";
-import { Colors } from '../constants/Colors';
+import { Colors } from "../constants/Colors";
 
 const muscleGroups = {
   Abs: "Abs",
@@ -24,7 +24,7 @@ const muscleGroups = {
   Triceps: "Triceps",
 };
 
-const SetGoalsTab=() => {
+const SetGoalsTab = () => {
   const { goals, setGoal, removeGoal } = useWorkout();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [selectedMuscle, setSelectedMuscle] = useState<string | undefined>();
@@ -42,6 +42,12 @@ const SetGoalsTab=() => {
       setSelectedMuscle(undefined);
       setTargetWeight(0);
     }
+  };
+
+  const handleClose = () => {
+    setModalVisible(false);
+    setSelectedMuscle(undefined);
+    setTargetWeight(0);
   };
 
   return (
@@ -72,7 +78,7 @@ const SetGoalsTab=() => {
 
       <Pressable style={styles.addButton} onPress={() => setModalVisible(true)}>
         <ThemedText style={styles.addButtonText}>
-          <TabBarIcon name="add" style={{color: "#fff"}}/>
+          <TabBarIcon name="add" style={{ color: "#fff" }} />
         </ThemedText>
       </Pressable>
 
@@ -97,7 +103,7 @@ const SetGoalsTab=() => {
 
           <TextInput
             placeholder="Target Weight (lbs)"
-            value={targetWeight.toString()}
+            value={targetWeight > 0 ? targetWeight.toString() : ""}
             onChangeText={(text) => setTargetWeight(Number(text))}
             keyboardType="numeric"
             style={styles.input}
@@ -106,10 +112,7 @@ const SetGoalsTab=() => {
           <Pressable style={styles.saveButton} onPress={handleAddGoal}>
             <ThemedText style={styles.saveButtonText}>Add Goal</ThemedText>
           </Pressable>
-          <Pressable
-            style={styles.closeButton}
-            onPress={() => setModalVisible(false)}
-          >
+          <Pressable style={styles.closeButton} onPress={handleClose}>
             <TabBarIcon name="close-circle-outline" style={{ color: "#000" }} />
           </Pressable>
         </ThemedView>
@@ -186,10 +189,10 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 5,
     padding: 10,
-    marginVertical: 10,
+    marginVertical: 20,
   },
   saveButton: {
-    backgroundColor: "#28a745",
+    backgroundColor: Colors.aqua,
     padding: 15,
     borderRadius: 30,
     marginTop: 20,

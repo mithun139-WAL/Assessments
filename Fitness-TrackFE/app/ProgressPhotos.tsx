@@ -3,27 +3,12 @@ import { StyleSheet } from "react-native";
 import { ThemedView } from "../components/commonComponents/ThemedView";
 import { Colors } from "@/constants/Colors";
 import GalleryView from "../components/GalleryView";
-import PhotoPreviewModal from "../components/PhotoPreviewModal";
 
 const ProgressPhotos: React.FC = () => {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number>(0);
-
-  const handleOpenModal = (index: number) => {
-    setSelectedPhotoIndex(index);
-    setModalVisible(true);
-  };
-
-  const handleCloseModal = () => setModalVisible(false);
-
+  
   return (
     <ThemedView style={styles.container}>
-      <GalleryView onPressPhoto={handleOpenModal} />
-      <PhotoPreviewModal
-        visible={modalVisible}
-        initialIndex={selectedPhotoIndex}
-        onClose={handleCloseModal}
-      />
+      <GalleryView /> 
     </ThemedView>
   );
 };

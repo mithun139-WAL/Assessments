@@ -6,20 +6,12 @@ type Photo = {
   uri: string;
   date: string;
   title: string;
-};
-
-type WorkoutRoute = {
-  id: string;
-  date: string;
-  distance: number;
-  routeCoordinates: { latitude: number; longitude: number }[];
+  address?: string;
 };
 
 type TrackingContextType = {
   photos: Photo[];
-  workoutRoutes: WorkoutRoute[];
   addPhoto: (photo: Photo) => void;
-  addWorkoutRoute: (route: WorkoutRoute) => void;
   removePhoto: (id: string) => void;
 };
 
@@ -31,23 +23,18 @@ export const TrackingProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [photos, setPhotos] = useState<Photo[]>([]);
-  const [workoutRoutes, setWorkoutRoutes] = useState<WorkoutRoute[]>([]);
+  const [address, setAddress] = useState<string | "Not Available">("");
 
   useEffect(() => {
     const fetchTrackingData = async () => {
       try {
         const storedPhotos = await AsyncStorage.getItem("photos");
-        const storedRoutes = await AsyncStorage.getItem("workoutRoutes");
+        const storedLocation = await AsyncStorage.getItem("location");
 
         if (storedPhotos) {
-          console.log("Stored Photos Fetched:", storedPhotos);
           setPhotos(JSON.parse(storedPhotos));
         }
 
-        if (storedRoutes) {
-          console.log("Stored Routes Fetched:", storedRoutes);
-          setWorkoutRoutes(JSON.parse(storedRoutes));
-        }
       } catch (error) {
         console.error("Error fetching tracking data:", error);
       }
@@ -60,7 +47,6 @@ export const TrackingProvider: React.FC<{ children: React.ReactNode }> = ({
     const updatePhotos = async () => {
       try {
         await AsyncStorage.setItem("photos", JSON.stringify(photos));
-        console.log("Photos Updated in AsyncStorage");
       } catch (error) {
         console.error("Error updating photos:", error);
       }
@@ -69,34 +55,21 @@ export const TrackingProvider: React.FC<{ children: React.ReactNode }> = ({
     updatePhotos();
   }, [photos]);
 
-  useEffect(() => {
-    const updateRoutes = async () => {
-      try {
-        await AsyncStorage.setItem("workoutRoutes", JSON.stringify(workoutRoutes));
-        console.log("Workout Routes Updated in AsyncStorage");
-      } catch (error) {
-        console.error("Error updating workout routes:", error);
-      }
-    };
-
-    updateRoutes();
-  }, [workoutRoutes]);
-
   const addPhoto = (photo: Photo) => {
     setPhotos((prev) => [...prev, photo]);
-  };
-
-  const addWorkoutRoute = (route: WorkoutRoute) => {
-    setWorkoutRoutes((prev) => [...prev, route]);
   };
 
   const removePhoto = (id: string) => {
     setPhotos((prev) => prev.filter((photo) => photo.id !== id));
   };
 
+  const updateLocation = (newLocation: string) => {
+    setAddress(newLocation);
+  };
+
   return (
     <TrackingContext.Provider
-      value={{ photos, workoutRoutes, addPhoto, addWorkoutRoute, removePhoto }}
+      value={{ photos, addPhoto, removePhoto, }}
     >
       {children}
     </TrackingContext.Provider>

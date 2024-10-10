@@ -98,8 +98,13 @@ const styles = StyleSheet.create({
   activeTab: { borderColor: Colors.aqua },
   tabText: { fontSize: 16, fontWeight: "500" },
   arrow: {
-    fontSize: 18,
-    paddingHorizontal: 20,
+    fontSize: 16,
+    marginHorizontal: 20,
+    backgroundColor: Colors.aqua,
+    padding: 5,
+    color: Colors.white,
+    borderRadius: 30,
+    elevation: 5,
   },
   dateContainer: {
     flexDirection: "row",

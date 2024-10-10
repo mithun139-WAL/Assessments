@@ -70,6 +70,19 @@ export default function RootLayout() {
                   headerTitle: "",
                 }}
               />
+              <Stack.Screen
+                name="ProgressPhotos"
+                options={{
+                  headerTitle: "Gallery",
+                }}
+              />
+              <Stack.Screen
+                name="PhotoDisplay"
+                options={{
+                  headerTitle: "",
+                  headerTransparent: true
+                }}
+              />
             </Stack>
           </ThemeProvider>
         </BookmarkProvider>
