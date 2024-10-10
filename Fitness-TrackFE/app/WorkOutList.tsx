@@ -5,7 +5,7 @@ import {
   ScrollView,
   StyleSheet,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ThemedView } from "../components/commonComponents/ThemedView";
 import { ThemedText } from "../components/commonComponents/ThemedText";
 import { useLocalSearchParams } from "expo-router";
@@ -15,25 +15,56 @@ import { Colors } from "@/constants/Colors";
 import { TabBarIcon } from "@/components/commonComponents/TabBarIcon";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useBookmarks } from "@/context/BookmarkContext";
-
+import { useWorkout } from "@/context/WorkoutContext";
 
 const { width, height } = Dimensions.get("window");
 
+type Exercise = {
+  id: string;
+  name: string;
+  force: string | null;
+  level: string;
+  mechanic: string | null;
+  equipment: string | null;
+  primaryMuscles: string[];
+  secondaryMuscles: string[];
+  instructions: string[];
+  category: string;
+  images: any[];
+};
+
 const WorkOutList = () => {
   const { exerciseId } = useLocalSearchParams<{ exerciseId: string }>();
-  const selectedExercise = exercises.find(
-    (exercise) => exercise.id === exerciseId
-  );
+  const { workouts } = useWorkout();
+  
+  const selectedExercise =
+    exercises.find((exercise) => exercise.id === exerciseId) ||
+    workouts.find((workout) => workout.id === exerciseId);
+
   if (!selectedExercise) return null;
 
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const { bookmarkedExercises, toggleBookmark } = useBookmarks();
 
+  const isExercise = (item: any): item is Exercise => {
+    return item.images && Array.isArray(item.images);
+  };
+
   const toggleImage = () => {
-    if (selectedExercise.images.length > 1) {
+    if (isExercise(selectedExercise) && selectedExercise.images.length > 1) {
       setCurrentImageIndex((prevIndex) => (prevIndex === 0 ? 1 : 0));
     }
   };
+
+  useEffect(() => {
+    const imageCount = isExercise(selectedExercise)
+      ? selectedExercise.images.length
+      : 0;
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imageCount);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [selectedExercise]);
 
   return (
     <ThemedView style={styles.container}>
@@ -44,18 +75,28 @@ const WorkOutList = () => {
         bounces={true}
         contentContainerStyle={styles.scrollContent}
       >
-        <Pressable onPress={toggleImage}>
+        {isExercise(selectedExercise) ? (
+          <Pressable onPress={toggleImage}>
+            <Image
+              source={selectedExercise.images[currentImageIndex]}
+              style={styles.mainImage}
+            />
+          </Pressable>
+        ) : (
           <Image
-            source={selectedExercise.images[currentImageIndex]}
-            style={styles.mainImage}
-          />
-        </Pressable>
+              source={require("../assets/images/logo-black.png")}
+              style={styles.mainImage}
+            />
+        )}
 
         <LinearGradient
           colors={["rgba(0,0,0,0.5)", "#000"]}
           style={styles.infoContainer}
         >
-          <Pressable onPress={()=>toggleBookmark(selectedExercise.id)} style={styles.bookmark}>
+          <Pressable
+            onPress={() => toggleBookmark(selectedExercise.id)}
+            style={styles.bookmark}
+          >
             <TabBarIcon
               name={
                 bookmarkedExercises.includes(selectedExercise.id)
@@ -63,15 +104,14 @@ const WorkOutList = () => {
                   : "bookmark-outline"
               }
               size={18}
-              color={Colors.white}
-              style={{ fontWeight: "600" }}
+              style={{ fontWeight: "600", color: Colors.white }}
             />
           </Pressable>
           <ThemedText style={styles.exerciseTitle}>
             {selectedExercise?.name}
           </ThemedText>
           <ThemedText style={styles.label}>
-            <TabBarIcon name="walk" size={20} />{" "}
+            <TabBarIcon name="walk" size={20} style={{ color: Colors.white }} />{" "}
             <ThemedText style={styles.value}>
               {selectedExercise?.force}{" "}
             </ThemedText>

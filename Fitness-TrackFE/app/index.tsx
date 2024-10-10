@@ -14,7 +14,7 @@ const signUpScreen = () => {
   const router = useRouter();
   const { signInWithGoogle, loading, error, userInfo } = useAuth();
   const handleSignIn = () => {
-    router.push("/welcomescreen")
+    router.navigate("/welcomescreen")
   }
 
   return (

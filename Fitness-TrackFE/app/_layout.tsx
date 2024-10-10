@@ -14,6 +14,8 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "../constants/Colors";
 import { AuthProvider } from "@/context/AuthContext";
 import { BookmarkProvider } from "@/context/BookmarkContext";
+import { WorkoutProvider } from "@/context/WorkoutContext";
+import { TrackingProvider } from "@/context/TrackingContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -34,35 +36,58 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <BookmarkProvider>
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          <Stack initialRouteName="index">
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="welcomescreen"
-              options={{ headerShown: false, headerTitle: "" }}
-            />
-            <Stack.Screen
-              name="WorkOutList"
-              options={{
-                headerTransparent: true,
-                headerTitle: "",
-                headerTintColor: "#fff",
-              }}
-            />
-            <Stack.Screen
-              name="(tabs)"
-              options={{
-                headerShown: false,
-                headerTransparent: true,
-                headerTitle: "",
-              }}
-            />
-          </Stack>
-        </ThemeProvider>
-      </BookmarkProvider>
+      <WorkoutProvider>
+        <TrackingProvider>
+        <BookmarkProvider>
+          <ThemeProvider
+            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+          >
+            <Stack initialRouteName="index">
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="welcomescreen"
+                options={{ headerShown: false, headerTitle: "" }}
+              />
+              <Stack.Screen
+                name="WorkOutList"
+                options={{
+                  headerTransparent: true,
+                  headerTitle: "",
+                  headerTintColor: "#fff",
+                }}
+              />
+              <Stack.Screen
+                name="customworkout"
+                options={{
+                  headerTitle: "Add Workout",
+                }}
+              />
+              <Stack.Screen
+                name="(tabs)"
+                options={{
+                  headerShown: false,
+                  headerTransparent: true,
+                  headerTitle: "",
+                }}
+              />
+              <Stack.Screen
+                name="ProgressPhotos"
+                options={{
+                  headerTitle: "Gallery",
+                }}
+              />
+              <Stack.Screen
+                name="PhotoDisplay"
+                options={{
+                  headerTitle: "",
+                  headerTransparent: true
+                }}
+              />
+            </Stack>
+          </ThemeProvider>
+        </BookmarkProvider>
+        </TrackingProvider>
+      </WorkoutProvider>
     </AuthProvider>
   );
 }

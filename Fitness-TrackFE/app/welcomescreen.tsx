@@ -5,9 +5,8 @@ import { Dimensions, StyleSheet } from "react-native";
 import { router } from "expo-router";
 import CommonDropDown from "@/components/commonComponents/CommonDropDown";
 import { CommonButton } from "../components/commonComponents/CommonButton";
-import CommonTextInput from "@/components/commonComponents/CommonTextInput";
 
-export default function WelcomeScreen() {
+const WelcomeScreen = () => {
   const [name, setName] = useState<string>("");
   const [goal, setGoal] = useState<string>("");
   const [experience, setExperience] = useState<string>("");
@@ -27,12 +26,6 @@ export default function WelcomeScreen() {
         <ThemedText style={styles.subText}>
           Track your routines, set goals, and see your progress.
         </ThemedText>
-        <CommonTextInput
-          style={styles.input}
-          placeholder="Enter your name"
-          value={name}
-          onChangeText={setName}
-        />
         <CommonDropDown
           items={[
             { label: "Lose Weight", value: "lose_weight" },
@@ -118,3 +111,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
+
+export default WelcomeScreen;

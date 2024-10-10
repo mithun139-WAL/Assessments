@@ -1,12 +1,22 @@
 import React, { useState } from "react";
-import { StyleSheet, FlatList, Image, Pressable } from "react-native";
+import {
+  StyleSheet,
+  FlatList,
+  Image,
+  Pressable,
+  TextInput,
+  Dimensions,
+} from "react-native";
 import { exercises } from "../../data/exercises";
 import { TabBarIcon } from "@/components/commonComponents/TabBarIcon";
 import { ThemedView } from "@/components/commonComponents/ThemedView";
 import { ThemedText } from "../../components/commonComponents/ThemedText";
-import CommonTextInput from "@/components/commonComponents/CommonTextInput";
 import { router } from "expo-router";
 import { useBookmarks } from "@/context/BookmarkContext";
+import { Colors } from "@/constants/Colors";
+import { useWorkout } from "../../context/WorkoutContext";
+
+const { width } = Dimensions.get("window");
 
 type Exercise = {
   id: string;
@@ -22,16 +32,33 @@ type Exercise = {
   images: any[];
 };
 
+type Workout = {
+  id: string;
+  name: string;
+  force?: string;
+  level: string;
+  mechanic?: string;
+  equipment?: string;
+  primaryMuscles: string[];
+  secondaryMuscles?: string[];
+  instructions: string[];
+  category: string;
+};
+
 const WorkoutScreen = () => {
   const [searchText, setSearchText] = useState<string>("");
   const [filteredExercises, setFilteredExercises] =
     useState<Exercise[]>(exercises);
-  
-    const { bookmarkedExercises, toggleBookmark } = useBookmarks();
+
+  const { bookmarkedExercises, toggleBookmark } = useBookmarks();
+
+  const [activeTab, setActiveTab] = useState<"Custom" | "Browse">("Browse");
+
+  const { workouts, removeWorkout } = useWorkout();
 
   const handleSearch = (text: string) => {
     setSearchText(text);
-    if (text.length > 3) {
+    if (text.length > 2) {
       const filteredData = exercises.filter((exercise) => {
         const lowerCaseText = text.toLowerCase();
         return (
@@ -50,7 +77,10 @@ const WorkoutScreen = () => {
     }
   };
 
-  const renderExerciseItem = ({ item }: { item: Exercise }) => (
+  const isExercise = (item: any): item is Exercise => {
+    return item.images && Array.isArray(item.images);
+  };
+  const renderExerciseItem = ({ item }: { item: Exercise | Workout }) => (
     <Pressable
       style={styles.card}
       onPress={() =>
@@ -60,34 +90,131 @@ const WorkoutScreen = () => {
         })
       }
     >
-      <Image source={item.images[0]} style={styles.thumbnail} />
+      {isExercise(item) ? (
+        <Image source={item.images[0]} style={styles.thumbnail} />
+      ) : null}
+
       <ThemedView style={styles.cardContent}>
-        <ThemedText style={styles.exerciseName}>{item.name}</ThemedText>
+        {isExercise(item) ? (
+          <ThemedText style={styles.exerciseName}>{item.name}</ThemedText>
+        ) : (
+          <ThemedView
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <ThemedText style={styles.exerciseName}>{item.name}</ThemedText>
+            <Pressable onPress={() => removeWorkout(item.id)}>
+              <TabBarIcon name="trash-outline" size={18} />
+            </Pressable>
+          </ThemedView>
+        )}
+
         <ThemedText style={styles.category}>
           {item.category.toUpperCase()}
         </ThemedText>
         <ThemedText style={styles.level}>{item.level}</ThemedText>
       </ThemedView>
-      <Pressable onPress={() => toggleBookmark(item.id)}>
-        <TabBarIcon name={bookmarkedExercises.includes(item.id) ? "bookmark" : "bookmark-outline"} size={18} />
+      <Pressable
+        onPress={() => toggleBookmark(item.id)}
+        style={{ paddingLeft: 10 }}
+      >
+        <TabBarIcon
+          name={
+            bookmarkedExercises.includes(item.id)
+              ? "bookmark"
+              : "bookmark-outline"
+          }
+          size={18}
+        />
       </Pressable>
     </Pressable>
   );
 
   return (
     <ThemedView style={styles.container}>
-      <CommonTextInput
-        style={styles.searchBar}
-        placeholder="Search exercises by name, level, equipment, etc."
-        value={searchText}
-        onChangeText={handleSearch}
-      />
-      <FlatList
-        data={filteredExercises}
-        renderItem={renderExerciseItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContainer}
-      />
+      <ThemedView style={styles.menuBar}>
+        <Pressable onPress={() => setActiveTab("Custom")}>
+          <ThemedText
+            style={[
+              styles.menuOption,
+              activeTab === "Custom" && styles.activeMenuOption,
+            ]}
+          >
+            Custom
+          </ThemedText>
+        </Pressable>
+        <Pressable onPress={() => setActiveTab("Browse")}>
+          <ThemedText
+            style={[
+              styles.menuOption,
+              activeTab === "Browse" && styles.activeMenuOption,
+            ]}
+          >
+            Browse
+          </ThemedText>
+        </Pressable>
+      </ThemedView>
+      {activeTab === "Browse" && (
+        <>
+          <ThemedView style={styles.searchContainer}>
+            <TabBarIcon
+              name="search"
+              size={18}
+              color="#ddd"
+              style={{ paddingEnd: 10 }}
+            />
+            <TextInput
+              style={styles.searchBar}
+              placeholder="Search exercises by name, level, equipment, etc."
+              value={searchText}
+              onChangeText={handleSearch}
+              placeholderTextColor="#ddd"
+            />
+          </ThemedView>
+          <FlatList
+            data={filteredExercises}
+            renderItem={renderExerciseItem}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.listContainer}
+          />
+        </>
+      )}
+      {activeTab === "Custom" && (
+        <>
+          {workouts?.length > 0 ? (
+            <ThemedView style={{ flex: 1 }}>
+              <FlatList
+                data={workouts}
+                renderItem={renderExerciseItem}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={styles.listContainer}
+              />
+            </ThemedView>
+          ) : (
+            <ThemedView
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <ThemedView style={styles.forYouContainer}>
+                <ThemedText style={styles.forYouText}>
+                  This section is currently empty.
+                </ThemedText>
+                <ThemedText style={styles.forYouText}>
+                  Click '+' to add a workout
+                </ThemedText>
+              </ThemedView>
+            </ThemedView>
+          )}
+          <Pressable
+            style={styles.addButton}
+            onPress={() => router.push("/customworkout")}
+          >
+            <TabBarIcon name="add" size={18} style={styles.addButtonText} />
+          </Pressable>
+        </>
+      )}
     </ThemedView>
   );
 };
@@ -95,55 +222,96 @@ const WorkoutScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 20,
-    backgroundColor: "#f8f8f8",
+  },
+  menuBar: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 10,
+    borderBottomColor: "#ddd",
+    borderBottomWidth: 1,
+  },
+  menuOption: {
+    fontSize: 16,
+    borderBottomWidth: 2,
+    borderColor: "transparent",
+    paddingBottom: 10,
+    textAlign: "center",
+    width: width * 0.4,
+  },
+  activeMenuOption: {
+    fontWeight: "bold",
+    borderColor: Colors.aqua,
+  },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    height: 40,
+    marginHorizontal: 15,
+    paddingHorizontal: 10,
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    marginBottom: 35,
+    marginTop: 20,
+    elevation: 3,
   },
   searchBar: {
-    height: 40,
-    borderColor: "#ccc",
-    borderBottomWidth: 1,
-    paddingHorizontal: 18,
-    marginHorizontal: 15,
-    borderRadius: 5,
-    marginBottom: 35,
-    elevation: 1,
-    backgroundColor: "#fff",
+    flex: 1,
   },
   listContainer: {
     paddingHorizontal: 15,
   },
   card: {
     flexDirection: "row",
-    backgroundColor: "#fff",
-    borderRadius: 10,
     padding: 15,
-    marginBottom: 15,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 1,
   },
   cardContent: {
     flex: 1,
     paddingLeft: 15,
   },
   exerciseName: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 12,
+    fontWeight: "500",
+    letterSpacing: 1,
   },
   category: {
-    fontSize: 14,
+    fontSize: 10,
     color: "#666",
   },
   level: {
     fontSize: 12,
     color: "#aaa",
+    textTransform: "capitalize",
   },
   thumbnail: {
-    width: 80,
-    height: 80,
-    borderRadius: 10,
+    width: 100,
+    height: 90,
+    borderRadius: 5,
+  },
+  forYouContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  forYouText: {
+    fontSize: 16,
+    color: "#888",
+  },
+  addButton: {
+    backgroundColor: Colors.blue,
+    width: 50,
+    height: 50,
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    bottom: 10,
+    right: 10,
+    elevation: 5,
+    margin: 15,
+  },
+  addButtonText: {
+    color: "#fff",
+    fontWeight: "400",
   },
 });
 

@@ -1,21 +1,62 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 
 type BookmarkContextType = {
   bookmarkedExercises: string[];
   toggleBookmark: (id: string) => void;
 };
 
-const BookmarkContext = createContext<BookmarkContextType | undefined>(undefined);
+const BookmarkContext = createContext<BookmarkContextType | undefined>(
+  undefined
+);
 
-export const BookmarkProvider: React.FC<{ children: ReactNode }> = ({ children }: { children: ReactNode }) => {
+export const BookmarkProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
   const [bookmarkedExercises, setBookmarkedExercises] = useState<string[]>([]);
 
-  const toggleBookmark = (id: string) => {
-    setBookmarkedExercises((prevBookmarks) =>
-      prevBookmarks.includes(id)
-        ? prevBookmarks.filter((exerciseId) => exerciseId !== id)
-        : [...prevBookmarks, id]
-    );
+  useEffect(() => {
+    const fetchBookmarkedExercises = async () => {
+      try {
+        const storedBookmarks = await AsyncStorage.getItem(
+          "bookmarkedExercises"
+        );
+        if (storedBookmarks)
+          setBookmarkedExercises(JSON.parse(storedBookmarks));
+      } catch (err) {
+        console.error(
+          "Failed to load bookmarked exercises from AsyncStorage",
+          err
+        );
+      }
+    };
+
+    fetchBookmarkedExercises();
+  }, []);
+
+  const toggleBookmark = async (id: string) => {
+    const updatedBookmarks = bookmarkedExercises.includes(id)
+      ? bookmarkedExercises.filter((exerciseId) => exerciseId !== id)
+      : [...bookmarkedExercises, id];
+
+    setBookmarkedExercises(updatedBookmarks);
+
+    try {
+      await AsyncStorage.setItem(
+        "bookmarkedExercises",
+        JSON.stringify(updatedBookmarks)
+      );
+    } catch (err) {
+      console.error("Failed to save BookMarks", err);
+    }
   };
 
   return (
@@ -26,9 +67,9 @@ export const BookmarkProvider: React.FC<{ children: ReactNode }> = ({ children }
 };
 
 export const useBookmarks = () => {
-    const context = useContext(BookmarkContext);
-    if (!context) {
-      throw new Error("useBookmarks must be used within a BookmarkProvider");
-    }
-    return context;
-  };
+  const context = useContext(BookmarkContext);
+  if (!context) {
+    throw new Error("useBookmarks must be used within a BookmarkProvider");
+  }
+  return context;
+};
