@@ -5,7 +5,7 @@ import { TabBarIcon } from "@/components/commonComponents/TabBarIcon";
 import { ThemedView } from "../../components/commonComponents/ThemedView";
 import { Pressable } from "react-native";
 
-export default function TabLayout() {
+const TabLayout = () => {
   return (
     <Tabs
       screenOptions={{
@@ -48,6 +48,24 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
+        name="index"
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "home" : "home-outline"}
+              color={color}
+            />
+          ),
+          tabBarLabelStyle: {
+            display: "none",
+          },
+          tabBarItemStyle: {
+            width: 50,
+          },
+          headerTitle: "Home",
+        }}
+      />
+      <Tabs.Screen
         name="workouts"
         options={{
           tabBarIcon: ({ color, focused }) => (
@@ -66,11 +84,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="dashboard"
+        name="camera"
         options={{
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? "stats-chart" : "stats-chart-outline"}
+              name={focused ? "camera-sharp" : "camera-outline"}
               color={color}
             />
           ),
@@ -83,24 +101,7 @@ export default function TabLayout() {
           headerTitle: "Activity",
         }}
       />
-      <Tabs.Screen
-        name="index"
-        options={{
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "home" : "home-outline"}
-              color={color}
-            />
-          ),
-          tabBarLabelStyle: {
-            display: "none",
-          },
-          tabBarItemStyle: {
-            width: 50,
-          },
-          headerTitle: "Home",
-        }}
-      />
+      
       <Tabs.Screen
         name="programmes"
         options={{
@@ -140,3 +141,5 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+export default TabLayout;

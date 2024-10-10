@@ -15,6 +15,7 @@ import { Colors } from "../constants/Colors";
 import { AuthProvider } from "@/context/AuthContext";
 import { BookmarkProvider } from "@/context/BookmarkContext";
 import { WorkoutProvider } from "@/context/WorkoutContext";
+import { TrackingProvider } from "@/context/TrackingContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -36,6 +37,7 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <WorkoutProvider>
+        <TrackingProvider>
         <BookmarkProvider>
           <ThemeProvider
             value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
@@ -71,6 +73,7 @@ export default function RootLayout() {
             </Stack>
           </ThemeProvider>
         </BookmarkProvider>
+        </TrackingProvider>
       </WorkoutProvider>
     </AuthProvider>
   );

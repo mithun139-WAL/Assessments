@@ -90,9 +90,7 @@ const CustomWorkout = () => {
       secondaryMuscles,
       instructions,
       category,
-    };
-    console.log("NewWorkout",newWorkout);
-    
+    };    
     addWorkout(newWorkout);
     setName("");
     setForce("pull");
