@@ -6,34 +6,37 @@ import React, {
   ReactNode,
   useMemo,
 } from "react";
-import {
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signInWithCredential,
-  User,
-  signOut,
-} from "firebase/auth";
-import { auth } from "../firebaseConfig";
-import * as WebBrowser from "expo-web-browser";
-import * as Google from "expo-auth-session/providers/google";
-import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { api } from "../utils/api";
+import { router } from "expo-router";
 
-WebBrowser.maybeCompleteAuthSession();
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+}
 
 interface AuthContextProps {
   userInfo: User | null;
   loading: boolean;
   error: string | null;
-  signInWithGoogle: () => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (name: string, email: string, password: string) => Promise<void>;
   signOutUser: () => Promise<void>;
+  editUserName: (newName: string) => Promise<void>;
+  checkUser:() => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextProps>({
   userInfo: null,
   loading: true,
   error: null,
-  signInWithGoogle: async () => {},
+  signIn: async () => {},
+  signUp: async () => {},
   signOutUser: async () => {},
+  editUserName: async () => {},
+  checkUser: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -44,59 +47,60 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [userInfo, setUserInfo] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId:
-      "295526462555-b6pkdu5tejsllnm8p3174391l29m8hsm.apps.googleusercontent.com",
-    iosClientId:
-      "295526462555-f8rnaoejh07hl445u604tcpotnu9rk1m.apps.googleusercontent.com",
-    webClientId:
-      "295526462555-khfkq4ds64hkiofgn8hanocmos7g8ask.apps.googleusercontent.com",
-    clientId:
-      "295526462555-khfkq4ds64hkiofgn8hanocmos7g8ask.apps.googleusercontent.com",
-  });
-
-  useEffect(() => {
-    if (response?.type === "success") {
-      const { id_token } = response.params;
-      const credentials = GoogleAuthProvider.credential(id_token);
-      signInWithCredential(auth, credentials);
-    }
-  }, [response]);
 
   const checkUser = async () => {
     try {
-      const userJSON = await ReactNativeAsyncStorage.getItem("@user");
+      const userJSON = await AsyncStorage.getItem("@user");
       const userData = userJSON ? JSON.parse(userJSON) : null;
+      console.log("Async Storage Data",userData);
       setUserInfo(userData);
     } catch (err) {
       console.error(err);
     }
   };
-
   useEffect(() => {
     checkUser();
-    const unSubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        console.error("User", JSON.stringify(user));
-        setUserInfo(user);
-        await ReactNativeAsyncStorage.setItem("@user", JSON.stringify(user));
-      } else {
-        console.error("User not Authenticated");
-      }
-    });
-    return () => unSubscribe();
-  }, [auth]);
+  }, []);
 
-  const signInWithGoogle = async () => {
+  const signIn = async (email: string, password: string) => {
     setLoading(true);
     setError(null);
     try {
-      await promptAsync();
+      const response = await api.post("/user/login", { email, password });
+      const userData: User = response;
+      setUserInfo(userData);
+      await AsyncStorage.setItem("@user", JSON.stringify(userData));
     } catch (err) {
-      setError("Error during Google Sign-In: " + err);
+      setError("Error during login: " + (err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signUp = async (name: string, email: string, password: string) => {
+    setLoading(true);
+    setError(null);
+    console.log("Data",  name, email, password);
+    
+    try {
+      const response = await api.post("/user/signup", {
+        name,
+        email,
+        password,
+      });
+      const userData = response;
+      setUserInfo(userData);
+      await AsyncStorage.setItem("@user", JSON.stringify(userData));
+    } catch (err) {
+      console.error("Error during signup:", err);
+      const message =
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message ||
+        (err instanceof Error ? err.message : "An error occurred");
+
+      setError("Error during signup: " + message);
     } finally {
       setLoading(false);
     }
@@ -104,12 +108,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const signOutUser = async () => {
     setLoading(true);
+    setError(null);
     try {
-      await signOut(auth);
-      await ReactNativeAsyncStorage.removeItem("@user");
+      await AsyncStorage.removeItem("@user");
       setUserInfo(null);
     } catch (err) {
-      setError("Error signing out: " + err);
+      setError("Error signing out: " + (err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const editUserName = async (newName: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.patch("/user/edit", { name: newName });
+      const updatedUserData: User = response;
+      setUserInfo(updatedUserData);
+      await AsyncStorage.setItem("@user", JSON.stringify(updatedUserData));
+    } catch (err) {
+      setError("Error updating username: " + (err as Error).message);
     } finally {
       setLoading(false);
     }
@@ -120,8 +139,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       userInfo,
       loading,
       error,
-      signInWithGoogle,
+      signIn,
+      signUp,
       signOutUser,
+      editUserName,
+      checkUser,
     }),
     [userInfo, loading, error]
   );

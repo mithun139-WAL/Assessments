@@ -79,7 +79,6 @@ const PhotoPreview = ({
       const { coords } = await Location.getCurrentPositionAsync();
       if (coords) {
         const { latitude, longitude } = coords;
-        console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
 
         await reverseGeocodeWithTimeout({ latitude, longitude });
       }

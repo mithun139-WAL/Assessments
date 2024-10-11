@@ -5,9 +5,9 @@ import { Dimensions, StyleSheet } from "react-native";
 import { router } from "expo-router";
 import CommonDropDown from "@/components/commonComponents/CommonDropDown";
 import { CommonButton } from "../components/commonComponents/CommonButton";
+import { Colors } from "@/constants/Colors";
 
 const WelcomeScreen = () => {
-  const [name, setName] = useState<string>("");
   const [goal, setGoal] = useState<string>("");
   const [experience, setExperience] = useState<string>("");
   const [goalOpen, setGoalOpen] = useState<boolean>(false);
@@ -62,9 +62,6 @@ const WelcomeScreen = () => {
         >
           Skip Setup
         </ThemedText>
-        <ThemedText style={styles.ignore}>
-          Ignore this for now and skip!!
-        </ThemedText>
       </ThemedView>
     </ThemedView>
   );
@@ -88,7 +85,7 @@ const styles = StyleSheet.create({
   },
   button: {
     marginVertical: 20,
-    backgroundColor: "#28a745",
+    backgroundColor: Colors.blue,
   },
   text: {
     marginVertical: 30,

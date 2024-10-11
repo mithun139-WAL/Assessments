@@ -45,7 +45,10 @@ const CommonDropDown = ({
         placeholder={placeholder}
         style={[styles.dropdown, dropdownStyle]}
         textStyle={textStyle}
-        dropDownContainerStyle={styles.dropDownContainer}
+        dropDownContainerStyle={[
+          styles.dropDownContainer,
+        ]}
+        dropDownDirection='TOP'
       />
     </ThemedView>
   )
@@ -56,7 +59,7 @@ export default CommonDropDown
 const styles = StyleSheet.create({
     container: {
         marginVertical: 15,
-        width: '80%',
+        width: '100%',
       },
       dropdown: {
         backgroundColor: '#fafafa',

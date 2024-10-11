@@ -1,6 +1,12 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
 
 type ExerciseLog = {
   id: number;
@@ -56,67 +62,116 @@ type WorkoutContextType = {
   loadWorkouts: () => Promise<void>;
 };
 
+const initialState = {
+  exerciseLogs: [] as ExerciseLog[],
+  progressData: [] as ProgressData[],
+  goals: [] as Goal[],
+  workouts: [] as Workout[],
+  selectedDate: new Date(),
+};
+
+type Action =
+  | { type: "SET_EXERCISE_LOGS"; payload: ExerciseLog[] }
+  | { type: "SET_PROGRESS_DATA"; payload: ProgressData[] }
+  | { type: "SET_GOALS"; payload: Goal[] }
+  | { type: "SET_WORKOUTS"; payload: Workout[] }
+  | { type: "SET_SELECTED_DATE"; payload: Date };
+
+const reducer = (state: typeof initialState, action: Action) => {
+  switch (action.type) {
+    case "SET_EXERCISE_LOGS":
+      return { ...state, exerciseLogs: action.payload };
+    case "SET_PROGRESS_DATA":
+      return { ...state, progressData: action.payload };
+    case "SET_GOALS":
+      return { ...state, goals: action.payload };
+    case "SET_WORKOUTS":
+      return { ...state, workouts: action.payload };
+    case "SET_SELECTED_DATE":
+      return { ...state, selectedDate: action.payload };
+    default:
+      return state;
+  }
+};
+
 const WorkoutContext = createContext<WorkoutContextType | undefined>(undefined);
 
-const generateUUID = () => {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0;
-    const v = c === "x" ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-};
+const API_URL = "http://10.0.2.2:8005/api";
 
 export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [exerciseLogs, setExerciseLogs] = useState<ExerciseLog[]>([]);
-  const [progressData, setProgressData] = useState<ProgressData[]>([]);
-  const [goals, setGoals] = useState<Goal[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
-
-  const API_URL = "http://10.0.2.2:8005/api";
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    loadExerciseLogs();
-    loadProgressData();
-    loadGoals();
-  }, [exerciseLogs, progressData, goals]);  
+    const fetchData = async () => {
+      await Promise.all([loadExerciseLogs(), loadProgressData(), loadGoals()]);
+    };
+    fetchData();
+  }, []);
 
-  const loadExerciseLogs = async () => {
+  const loadExerciseLogs = useCallback(async () => {
     try {
-      const response = await axios.get(`${API_URL}/exerciseLogs`);
-      setExerciseLogs(response.data);
+      const response = await fetch(`${API_URL}/exerciseLogs`);
+      if (response.ok) {
+        const data = await response.json();
+        dispatch({ type: "SET_EXERCISE_LOGS", payload: data });
+      } else {
+        console.error("Error: Response not OK", response.status);
+      }
     } catch (error) {
       console.error("Error fetching exercise logs:", error);
     }
-  };
+  }, []);
 
-  const loadProgressData = async () => {
+  const loadProgressData = useCallback(async () => {
     try {
-      const response = await axios.get(`${API_URL}/progress`);
-      setProgressData(response.data);
+      const response = await fetch(`${API_URL}/progress`);
+      if (response.ok) {
+        const data = await response.json();
+        dispatch({ type: "SET_PROGRESS_DATA", payload: data });
+      } else {
+        console.error("Error: Response not OK", response.status);
+      }
     } catch (error) {
       console.error("Error fetching progress data:", error);
     }
-  };
+  }, []);
 
-  const loadGoals = async () => {
+  const loadGoals = useCallback(async () => {
     try {
-      const response = await axios.get(`${API_URL}/goals`);
-      setGoals(response.data);
+      const response = await fetch(`${API_URL}/goals`);
+      if (response.ok) {
+        const data = await response.json();
+        dispatch({ type: "SET_GOALS", payload: data });
+      } else {
+        console.error("Error: Response not OK", response.status);
+      }
     } catch (error) {
       console.error("Error fetching goals:", error);
     }
-  };
+  }, []);
 
   const addWorkoutLog = async (log: Omit<ExerciseLog, "id">) => {
     try {
-      console.log("ExerciseLog", log);
-      
-      const response = await axios.post(`${API_URL}/logs`, log);
-      setExerciseLogs((prevLogs) => [...prevLogs, response.data]);
-      updateGoalProgress(response.data);
+      const response = await fetch(`${API_URL}/exerciseLogs`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(log),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        dispatch({
+          type: "SET_EXERCISE_LOGS",
+          payload: [...state.exerciseLogs, data],
+        });
+        updateGoalProgress(data);
+      } else {
+        console.error("Error: Response not OK", response.status);
+      }
     } catch (error) {
       console.error("Error adding workout log:", error);
     }
@@ -124,8 +179,23 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const updateProgress = async (progress: ProgressData) => {
     try {
-      const response = await axios.post(`${API_URL}/progress`, progress);
-      setProgressData((prevProgress) => [...prevProgress, response.data]);
+      const response = await fetch(`${API_URL}/progress`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(progress),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        dispatch({
+          type: "SET_PROGRESS_DATA",
+          payload: [...state.progressData, data],
+        });
+      } else {
+        console.error("Error: Response not OK", response.status);
+      }
     } catch (error) {
       console.error("Error updating progress:", error);
     }
@@ -133,8 +203,20 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const setGoal = async (goal: Omit<Goal, "id">) => {
     try {
-      const response = await axios.post(`${API_URL}/goals`, goal);
-      setGoals((prevGoals) => [...prevGoals, response.data]);
+      const response = await fetch(`${API_URL}/goals`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(goal),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        dispatch({ type: "SET_GOALS", payload: [...state.goals, data] });
+      } else {
+        console.error("Error: Response not OK", response.status);
+      }
     } catch (error) {
       console.error("Error setting goal:", error);
     }
@@ -142,8 +224,18 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const removeGoal = async (goalId: number) => {
     try {
-      await axios.delete(`${API_URL}/goals/${goalId}`);
-      setGoals((prevGoals) => prevGoals.filter((goal) => goal.id !== goalId));
+      const response = await fetch(`${API_URL}/goals/${goalId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        dispatch({
+          type: "SET_GOALS",
+          payload: state.goals.filter((goal) => goal.id !== goalId),
+        });
+      } else {
+        console.error("Error: Response not OK", response.status);
+      }
     } catch (error) {
       console.error("Error removing goal:", error);
     }
@@ -151,8 +243,18 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const removeWorkoutLog = async (exerciseId: number) => {
     try {
-      await axios.delete(`${API_URL}/exerciseLogs/${exerciseId}`);
-      setExerciseLogs((prevLogs) => prevLogs.filter((log) => log.id !== exerciseId));
+      const response = await fetch(`${API_URL}/exerciseLogs/${exerciseId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        dispatch({
+          type: "SET_EXERCISE_LOGS",
+          payload: state.exerciseLogs.filter((log) => log.id !== exerciseId),
+        });
+      } else {
+        console.error("Error: Response not OK", response.status);
+      }
     } catch (error) {
       console.error("Error removing ExerciseLog:", error);
     }
@@ -160,8 +262,9 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const updateGoalProgress = (exerciseLog: ExerciseLog) => {
     const targetMuscle = exerciseLog.muscle;
-    setGoals((prevGoals) =>
-      prevGoals.map((goal) => {
+    dispatch({
+      type: "SET_GOALS",
+      payload: state.goals.map((goal) => {
         if (goal.name === targetMuscle) {
           const newProgress = Math.min(
             goal.progress + (exerciseLog.weight / goal.target) * 100,
@@ -170,29 +273,25 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({
           return { ...goal, progress: newProgress };
         }
         return goal;
-      })
-    );
+      }),
+    });
   };
 
-
-
-
-
-  const loadWorkouts = async () => {
+  const loadWorkouts = useCallback(async () => {
     try {
       const storedWorkouts = await AsyncStorage.getItem("workouts");
       if (storedWorkouts) {
-        setWorkouts(JSON.parse(storedWorkouts));
+        dispatch({ type: "SET_WORKOUTS", payload: JSON.parse(storedWorkouts) });
       }
     } catch (error) {
       console.error("Failed to load workouts from AsyncStorage", error);
     }
-  };
+  }, []);
 
   const addWorkout = async (workout: Workout) => {
     try {
-      const updatedWorkouts = [...workouts, workout];
-      setWorkouts(updatedWorkouts);
+      const updatedWorkouts = [...state.workouts, workout];
+      dispatch({ type: "SET_WORKOUTS", payload: updatedWorkouts });
       await AsyncStorage.setItem("workouts", JSON.stringify(updatedWorkouts));
     } catch (error) {
       console.error("Failed to add workout to AsyncStorage", error);
@@ -201,8 +300,10 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const removeWorkout = async (id: string) => {
     try {
-      const updatedWorkouts = workouts.filter((workout) => workout.id !== id);
-      setWorkouts(updatedWorkouts);
+      const updatedWorkouts = state.workouts.filter(
+        (workout) => workout.id !== id
+      );
+      dispatch({ type: "SET_WORKOUTS", payload: updatedWorkouts });
       await AsyncStorage.setItem("workouts", JSON.stringify(updatedWorkouts));
     } catch (error) {
       console.error("Failed to remove workout from AsyncStorage", error);
@@ -211,17 +312,18 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     loadWorkouts();
-  }, [workouts]);
+  }, [loadWorkouts]);
 
   return (
     <WorkoutContext.Provider
       value={{
-        exerciseLogs,
-        progressData,
-        goals,
-        selectedDate,
-        workouts,
-        setSelectedDate,
+        exerciseLogs: state.exerciseLogs,
+        progressData: state.progressData,
+        goals: state.goals,
+        workouts: state.workouts,
+        selectedDate: state.selectedDate,
+        setSelectedDate: (date: Date) =>
+          dispatch({ type: "SET_SELECTED_DATE", payload: date }),
         addWorkoutLog,
         removeWorkoutLog,
         updateProgress,
@@ -246,56 +348,52 @@ export const useWorkout = () => {
   return context;
 };
 
+// useEffect(() => {
+//   const fetchWorkoutData = async () => {
+//     const logs = await AsyncStorage.getItem("exerciseLogs");
+//     const progress = await AsyncStorage.getItem("progressData");
+//     const savedGoals = await AsyncStorage.getItem("goals");
 
+//     if (logs) setExerciseLogs(JSON.parse(logs));
+//     if (progress) setProgressData(JSON.parse(progress));
+//     if (savedGoals) setGoals(JSON.parse(savedGoals));
+//   };
 
+//   fetchWorkoutData();
+// }, []);
 
-  // useEffect(() => {
-  //   const fetchWorkoutData = async () => {
-  //     const logs = await AsyncStorage.getItem("exerciseLogs");
-  //     const progress = await AsyncStorage.getItem("progressData");
-  //     const savedGoals = await AsyncStorage.getItem("goals");
+// useEffect(() => {
+//   AsyncStorage.setItem("exerciseLogs", JSON.stringify(exerciseLogs));
+// }, [exerciseLogs]);
 
-  //     if (logs) setExerciseLogs(JSON.parse(logs));
-  //     if (progress) setProgressData(JSON.parse(progress));
-  //     if (savedGoals) setGoals(JSON.parse(savedGoals));
-  //   };
+// useEffect(() => {
+//   AsyncStorage.setItem("progressData", JSON.stringify(progressData));
+// }, [progressData]);
 
-  //   fetchWorkoutData();
-  // }, []);
+// useEffect(() => {
+//   AsyncStorage.setItem("goals", JSON.stringify(goals));
+// }, [goals]);
 
-  // useEffect(() => {
-  //   AsyncStorage.setItem("exerciseLogs", JSON.stringify(exerciseLogs));
-  // }, [exerciseLogs]);
+// const addWorkoutLog = (log: Omit<ExerciseLog, "id">) => {
+//   const newLog = { ...log, id: generateUUID() };
+//   setExerciseLogs((prevLogs) => [...prevLogs, newLog]);
+//   updateGoalProgress(newLog);
+// };
 
-  // useEffect(() => {
-  //   AsyncStorage.setItem("progressData", JSON.stringify(progressData));
-  // }, [progressData]);
+// const setGoal = async (goal: Omit<Goal, "id">) => {
+//   const newGoal = { ...goal, id: generateUUID() };
+//   setGoals((prevGoals) => [...prevGoals, newGoal]);
+// };
 
-  // useEffect(() => {
-  //   AsyncStorage.setItem("goals", JSON.stringify(goals));
-  // }, [goals]);
+// const updateProgress = async (progress: ProgressData) => {
+//   const newProgress = { ...progress, id: generateUUID() };
+//   setProgressData((prevProgress) => [...prevProgress, newProgress]);
+// };
 
+// const removeWorkoutLog = (logId: string) => {
+//   setExerciseLogs((prevLogs) => prevLogs.filter((log) => log.id !== logId));
+// };
 
-  // const addWorkoutLog = (log: Omit<ExerciseLog, "id">) => {
-  //   const newLog = { ...log, id: generateUUID() };
-  //   setExerciseLogs((prevLogs) => [...prevLogs, newLog]);
-  //   updateGoalProgress(newLog);
-  // };
-
-  // const setGoal = async (goal: Omit<Goal, "id">) => {
-  //   const newGoal = { ...goal, id: generateUUID() };
-  //   setGoals((prevGoals) => [...prevGoals, newGoal]);
-  // };
-
-  // const updateProgress = async (progress: ProgressData) => {
-  //   const newProgress = { ...progress, id: generateUUID() };
-  //   setProgressData((prevProgress) => [...prevProgress, newProgress]);
-  // };
-
-  // const removeWorkoutLog = (logId: string) => {
-  //   setExerciseLogs((prevLogs) => prevLogs.filter((log) => log.id !== logId));
-  // };
-
-  // const removeGoal = async (goalId: string) => {
-  //   setGoals((prevGoals) => prevGoals.filter((goal) => goal.id !== goalId));
-  // };
+// const removeGoal = async (goalId: string) => {
+//   setGoals((prevGoals) => prevGoals.filter((goal) => goal.id !== goalId));
+// };

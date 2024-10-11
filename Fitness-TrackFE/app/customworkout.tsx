@@ -1,41 +1,26 @@
 import React, { useState } from "react";
-import { StyleSheet, TextInput, Pressable, ScrollView, Alert } from "react-native";
-import { Picker } from "@react-native-picker/picker";
+import {
+  StyleSheet,
+  TextInput,
+  Pressable,
+  ScrollView,
+  Alert,
+  FlatList,
+} from "react-native";
 import { ThemedText } from "@/components/commonComponents/ThemedText";
 import { ThemedView } from "@/components/commonComponents/ThemedView";
 import CommonTextInput from "@/components/commonComponents/CommonTextInput";
 import { useWorkout } from "@/context/WorkoutContext";
 import { router } from "expo-router";
 import { TabBarIcon } from "../components/commonComponents/TabBarIcon";
-
-const forceOptions = ["pull", "push", "static"];
-const levelOptions = ["beginner", "intermediate", "expert"];
-const mechanicOptions = ["compound", "isolation"];
-const equipmentOptions = [
-  "body only",
-  "machine",
-  "kettlebells",
-  "dumbbell",
-  "cable",
-  "barbell",
-  "bands",
-  "medicine ball",
-  "exercise ball",
-  "e-z curl bar",
-  "foam roll",
-];
-const categoryOptions = [
-  "strength",
-  "stretching",
-  "plyometrics",
-  "strongman",
-  "powerlifting",
-  "cardio",
-  "olympic weightlifting",
-  "crossfit",
-  "weighted bodyweight",
-  "assisted bodyweight",
-];
+import {
+  forceOptions,
+  levelOptions,
+  mechanicOptions,
+  equipmentOptions,
+  categoryOptions,
+} from "../data/customWorkoutData";
+import CommonDropDown from "@/components/commonComponents/CommonDropDown";
 
 const CustomWorkout = () => {
   const { addWorkout } = useWorkout();
@@ -49,6 +34,12 @@ const CustomWorkout = () => {
   const [primaryMuscles, setPrimaryMuscles] = useState<string[]>([""]);
   const [secondaryMuscles, setSecondaryMuscles] = useState<string[]>([""]);
   const [instructions, setInstructions] = useState<string[]>([""]);
+
+  const [openForce, setOpenForce] = useState(false);
+  const [openLevel, setOpenLevel] = useState(false);
+  const [openMechanic, setOpenMechanic] = useState(false);
+  const [openEquipment, setOpenEquipment] = useState(false);
+  const [openCategory, setOpenCategory] = useState(false);
 
   const handleArrayChange = (
     index: number,
@@ -85,7 +76,10 @@ const CustomWorkout = () => {
       return false;
     }
     if (!primaryMuscles[0].trim()) {
-      Alert.alert("Validation Error", "Please enter at least one primary muscle.");
+      Alert.alert(
+        "Validation Error",
+        "Please enter at least one primary muscle."
+      );
       return false;
     }
     if (!instructions[0].trim()) {
@@ -129,15 +123,22 @@ const CustomWorkout = () => {
     setState: React.Dispatch<React.SetStateAction<string[]>>
   ) => (
     <ThemedView style={styles.arrayContainer}>
-      <ThemedView style={{flexDirection: "row", alignItems: "center", justifyContent:  "space-between", marginBottom: 10}}>
-      <ThemedText style={styles.label}>{label}:</ThemedText>
-      <Pressable onPress={() => addField(setState)} style={styles.addButton}>
-        <TabBarIcon name="checkmark" size={16} style={styles.addButtonText} />
-      </Pressable>
+      <ThemedView
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: 10,
+        }}
+      >
+        <ThemedText style={styles.label}>{label}:</ThemedText>
+        <Pressable onPress={() => addField(setState)} style={styles.addButton}>
+          <TabBarIcon name="checkmark" size={16} style={styles.addButtonText} />
+        </Pressable>
       </ThemedView>
       {array.map((value, index) => (
         <ThemedView key={index} style={styles.arrayItem}>
-          <TextInput
+          <CommonTextInput
             style={styles.input}
             placeholder={`Enter ${label.toLowerCase()} #${index + 1}`}
             value={value}
@@ -155,60 +156,103 @@ const CustomWorkout = () => {
           </Pressable>
         </ThemedView>
       ))}
-      
     </ThemedView>
   );
 
   const renderDropdown = (
     label: string,
     selectedValue: string,
-    options: string[],
-    setValue: React.Dispatch<React.SetStateAction<string>>
+    options: { label: string; value: string }[],
+    setValue: React.Dispatch<React.SetStateAction<string>>,
+    open: boolean,
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>
   ) => (
     <ThemedView style={styles.dropdownContainer}>
       <ThemedText style={styles.label}>{label}:</ThemedText>
-      <Picker
-        selectedValue={selectedValue}
-        style={styles.picker}
-        onValueChange={(itemValue) => setValue(itemValue)}
-      >
-        {options.map((option) => (
-          <Picker.Item key={option} label={option} value={option} />
-        ))}
-      </Picker>
+      <CommonDropDown
+        items={options}
+        placeholder={`Select ${label}`}
+        defaultValue={selectedValue}
+        onChangeValue={setValue}
+        open={open}
+        setOpen={setOpen}
+      />
     </ThemedView>
   );
 
   return (
     <ThemedView style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <ThemedText style={styles.label}>Exercise Name:</ThemedText>
-        <CommonTextInput
-          placeholder="Enter exercise name"
-          value={name}
-          onChangeText={setName}
-        />
+      <FlatList
+        contentContainerStyle={styles.container}
+        data={[{}]}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => <ThemedView />}
+        ListHeaderComponent={
+          <>
+            <ThemedText style={styles.label}>Exercise Name:</ThemedText>
+            <CommonTextInput
+              placeholder="Enter exercise name"
+              value={name}
+              onChangeText={setName}
+            />
+            {renderDropdown(
+              "Force",
+              force,
+              forceOptions,
+              setForce,
+              openForce,
+              setOpenForce
+            )}
+            {renderDropdown(
+              "Level",
+              level,
+              levelOptions,
+              setLevel,
+              openLevel,
+              setOpenLevel
+            )}
+            {renderDropdown(
+              "Mechanic",
+              mechanic,
+              mechanicOptions,
+              setMechanic,
+              openMechanic,
+              setOpenMechanic
+            )}
+            {renderDropdown(
+              "Equipment",
+              equipment,
+              equipmentOptions,
+              setEquipment,
+              openEquipment,
+              setOpenEquipment
+            )}
+            {renderDropdown(
+              "Category",
+              category,
+              categoryOptions,
+              setCategory,
+              openCategory,
+              setOpenCategory
+            )}
 
-        {renderDropdown("Force", force, forceOptions, setForce)}
-        {renderDropdown("Level", level, levelOptions, setLevel)}
-        {renderDropdown("Mechanic", mechanic, mechanicOptions, setMechanic)}
-        {renderDropdown("Equipment", equipment, equipmentOptions, setEquipment)}
-        {renderDropdown("Category", category, categoryOptions, setCategory)}
-        {renderArrayFields(
-          "Primary Muscles",
-          primaryMuscles,
-          setPrimaryMuscles
-        )}
-        {renderArrayFields(
-          "Secondary Muscles",
-          secondaryMuscles,
-          setSecondaryMuscles
-        )}
-        {renderArrayFields("Instructions", instructions, setInstructions)}
-        <Pressable style={styles.addButton} onPress={handleSubmit}>
-          <ThemedText style={styles.addButtonText}>Save Workout</ThemedText>
-        </Pressable>
-      </ScrollView>
+            {renderArrayFields(
+              "Primary Muscles",
+              primaryMuscles,
+              setPrimaryMuscles
+            )}
+            {renderArrayFields(
+              "Secondary Muscles",
+              secondaryMuscles,
+              setSecondaryMuscles
+            )}
+            {renderArrayFields("Instructions", instructions, setInstructions)}
+            <Pressable style={styles.addButton} onPress={handleSubmit}>
+              <ThemedText style={styles.addButtonText}>Save Workout</ThemedText>
+            </Pressable>
+          </>
+        }
+      />
     </ThemedView>
   );
 };
