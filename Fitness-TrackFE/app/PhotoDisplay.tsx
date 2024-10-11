@@ -41,13 +41,16 @@ const PhotoDisplay: React.FC = () => {
     if (displayedPhotos.length === 0) {
       router.back();
     }
-  }, [displayedPhotos]); 
+  }, [displayedPhotos]);
 
   return (
     <ThemedView style={[styles.modalContainer, { paddingTop: headerHeight }]}>
       <ThemedView style={styles.titleContainer}>
         <ThemedText style={styles.imageTitle}>
-          {displayedPhotos[activeIndex]?.title || ""} - {displayedPhotos[activeIndex]?.address}
+          {displayedPhotos[activeIndex]?.title || ""}
+        </ThemedText>
+        <ThemedText style={styles.imageLocation}>
+          {displayedPhotos[activeIndex]?.address}
         </ThemedText>
       </ThemedView>
 
@@ -94,8 +97,13 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   imageTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
+    fontSize: 18,
+    fontWeight: "500",
+    letterSpacing: 1,
+  },
+  imageLocation:{
+    fontSize: 10,
+    fontWeight: "300",
   },
   carouselWrapper: {
     flex: 1,

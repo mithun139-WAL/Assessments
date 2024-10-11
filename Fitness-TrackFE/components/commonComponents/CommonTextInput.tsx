@@ -1,4 +1,3 @@
-// CommonTextInput.tsx
 import React from 'react';
 import { TextInput, StyleSheet, TextInputProps } from 'react-native';
 import { ThemedText } from './ThemedText';

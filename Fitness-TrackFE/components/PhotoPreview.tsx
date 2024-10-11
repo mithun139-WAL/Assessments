@@ -60,7 +60,7 @@ const PhotoPreview = ({
   const getCurrentLocation = async (): Promise<void> => {
     try {
       let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
+      if (status !== "granted" && !locationButtonState) {
         Alert.alert(
           "Permission Denied",
           "Allow the app to use location services",
@@ -166,23 +166,29 @@ const PhotoPreview = ({
           <Pressable style={styles.button} onPress={handleRetakePhoto}>
             <TabBarIcon name="trash" size={24} style={{ color: "red" }} />
           </Pressable>
-          <Pressable style={styles.button} onPress={() => handleLocation()}>
-            {locationButtonState === "loading" ? (
+
+          {locationButtonState === "loading" ? (
+            <ThemedView style={styles.button}>
               <ActivityIndicator size="small" color="#0000ff" />
-            ) : locationButtonState === "fetched" ? (
+            </ThemedView>
+          ) : locationButtonState === "fetched" ? (
+            <ThemedView style={styles.button}>
               <TabBarIcon
                 name="checkmark"
                 size={24}
                 style={{ color: "green" }}
               />
-            ) : (
+            </ThemedView>
+          ) : (
+            <Pressable style={styles.button} onPress={() => handleLocation()}>
               <TabBarIcon
                 name="location"
                 size={24}
                 style={{ color: Colors.blue }}
               />
-            )}
-          </Pressable>
+            </Pressable>
+          )}
+
           <Pressable
             style={[styles.button, !title && styles.disabledButton]}
             onPress={() =>

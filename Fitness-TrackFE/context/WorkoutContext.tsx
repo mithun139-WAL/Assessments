@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 type ExerciseLog = {
-  id: string;
+  id: number;
   muscle: string | undefined;
   exercise: string;
   sets: number;
@@ -18,7 +19,7 @@ type ProgressData = {
 };
 
 type Goal = {
-  id: string;
+  id: number;
   name: string;
   target: number;
   progress: number;
@@ -44,10 +45,10 @@ type WorkoutContextType = {
   selectedDate: Date;
   setSelectedDate: (date: Date) => void;
   addWorkoutLog: (log: Omit<ExerciseLog, "id">) => void;
-  removeWorkoutLog: (logId: string) => void;
+  removeWorkoutLog: (logId: number) => void;
   updateProgress: (progress: ProgressData) => void;
   setGoal: (goal: Omit<Goal, "id">) => void;
-  removeGoal: (goalId: string) => void;
+  removeGoal: (goalId: number) => void;
   updateGoalProgress: (exerciseLog: ExerciseLog) => void;
   workouts: Workout[];
   addWorkout: (workout: Workout) => void;
@@ -74,57 +75,87 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [workouts, setWorkouts] = useState<Workout[]>([]);
 
-  useEffect(() => {
-    const fetchWorkoutData = async () => {
-      const logs = await AsyncStorage.getItem("exerciseLogs");
-      const progress = await AsyncStorage.getItem("progressData");
-      const savedGoals = await AsyncStorage.getItem("goals");
-
-      if (logs) setExerciseLogs(JSON.parse(logs));
-      if (progress) setProgressData(JSON.parse(progress));
-      if (savedGoals) setGoals(JSON.parse(savedGoals));
-    };
-
-    fetchWorkoutData();
-  }, []);
+  const API_URL = "http://10.0.2.2:8005/api";
 
   useEffect(() => {
-    AsyncStorage.setItem("exerciseLogs", JSON.stringify(exerciseLogs));
-  }, [exerciseLogs]);
+    loadExerciseLogs();
+    loadProgressData();
+    loadGoals();
+  }, [exerciseLogs, progressData, goals]);  
 
-  useEffect(() => {
-    AsyncStorage.setItem("progressData", JSON.stringify(progressData));
-  }, [progressData]);
-
-  useEffect(() => {
-    AsyncStorage.setItem("goals", JSON.stringify(goals));
-  }, [goals]);
-
-  const formatDate = (date: Date) =>
-    `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-
-  const addWorkoutLog = (log: Omit<ExerciseLog, "id">) => {
-    const newLog = { ...log, id: generateUUID() };
-    setExerciseLogs((prevLogs) => [...prevLogs, newLog]);
-    updateGoalProgress(newLog);
+  const loadExerciseLogs = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/exerciseLogs`);
+      setExerciseLogs(response.data);
+    } catch (error) {
+      console.error("Error fetching exercise logs:", error);
+    }
   };
 
-  const removeWorkoutLog = (logId: string) => {
-    setExerciseLogs((prevLogs) => prevLogs.filter((log) => log.id !== logId));
+  const loadProgressData = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/progress`);
+      setProgressData(response.data);
+    } catch (error) {
+      console.error("Error fetching progress data:", error);
+    }
   };
 
-  const updateProgress = (progress: ProgressData) => {
-    const newProgress = { ...progress, id: generateUUID() };
-    setProgressData((prevProgress) => [...prevProgress, newProgress]);
+  const loadGoals = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/goals`);
+      setGoals(response.data);
+    } catch (error) {
+      console.error("Error fetching goals:", error);
+    }
   };
 
-  const setGoal = (goal: Omit<Goal, "id">) => {
-    const newGoal = { ...goal, id: generateUUID() };
-    setGoals((prevGoals) => [...prevGoals, newGoal]);
+  const addWorkoutLog = async (log: Omit<ExerciseLog, "id">) => {
+    try {
+      console.log("ExerciseLog", log);
+      
+      const response = await axios.post(`${API_URL}/logs`, log);
+      setExerciseLogs((prevLogs) => [...prevLogs, response.data]);
+      updateGoalProgress(response.data);
+    } catch (error) {
+      console.error("Error adding workout log:", error);
+    }
   };
 
-  const removeGoal = (goalId: string) => {
-    setGoals((prevGoals) => prevGoals.filter((goal) => goal.id !== goalId));
+  const updateProgress = async (progress: ProgressData) => {
+    try {
+      const response = await axios.post(`${API_URL}/progress`, progress);
+      setProgressData((prevProgress) => [...prevProgress, response.data]);
+    } catch (error) {
+      console.error("Error updating progress:", error);
+    }
+  };
+
+  const setGoal = async (goal: Omit<Goal, "id">) => {
+    try {
+      const response = await axios.post(`${API_URL}/goals`, goal);
+      setGoals((prevGoals) => [...prevGoals, response.data]);
+    } catch (error) {
+      console.error("Error setting goal:", error);
+    }
+  };
+
+  const removeGoal = async (goalId: number) => {
+    try {
+      await axios.delete(`${API_URL}/goals/${goalId}`);
+      setGoals((prevGoals) => prevGoals.filter((goal) => goal.id !== goalId));
+    } catch (error) {
+      console.error("Error removing goal:", error);
+    }
+  };
+
+  const removeWorkoutLog = async (exerciseId: number) => {
+    try {
+      await axios.delete(`${API_URL}/exerciseLogs/${exerciseId}`);
+      setExerciseLogs((prevLogs) => prevLogs.filter((log) => log.id !== exerciseId));
+    } catch (error) {
+      console.error("Error removing ExerciseLog:", error);
+    }
   };
 
   const updateGoalProgress = (exerciseLog: ExerciseLog) => {
@@ -142,6 +173,10 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({
       })
     );
   };
+
+
+
+
 
   const loadWorkouts = async () => {
     try {
@@ -210,3 +245,57 @@ export const useWorkout = () => {
   }
   return context;
 };
+
+
+
+
+  // useEffect(() => {
+  //   const fetchWorkoutData = async () => {
+  //     const logs = await AsyncStorage.getItem("exerciseLogs");
+  //     const progress = await AsyncStorage.getItem("progressData");
+  //     const savedGoals = await AsyncStorage.getItem("goals");
+
+  //     if (logs) setExerciseLogs(JSON.parse(logs));
+  //     if (progress) setProgressData(JSON.parse(progress));
+  //     if (savedGoals) setGoals(JSON.parse(savedGoals));
+  //   };
+
+  //   fetchWorkoutData();
+  // }, []);
+
+  // useEffect(() => {
+  //   AsyncStorage.setItem("exerciseLogs", JSON.stringify(exerciseLogs));
+  // }, [exerciseLogs]);
+
+  // useEffect(() => {
+  //   AsyncStorage.setItem("progressData", JSON.stringify(progressData));
+  // }, [progressData]);
+
+  // useEffect(() => {
+  //   AsyncStorage.setItem("goals", JSON.stringify(goals));
+  // }, [goals]);
+
+
+  // const addWorkoutLog = (log: Omit<ExerciseLog, "id">) => {
+  //   const newLog = { ...log, id: generateUUID() };
+  //   setExerciseLogs((prevLogs) => [...prevLogs, newLog]);
+  //   updateGoalProgress(newLog);
+  // };
+
+  // const setGoal = async (goal: Omit<Goal, "id">) => {
+  //   const newGoal = { ...goal, id: generateUUID() };
+  //   setGoals((prevGoals) => [...prevGoals, newGoal]);
+  // };
+
+  // const updateProgress = async (progress: ProgressData) => {
+  //   const newProgress = { ...progress, id: generateUUID() };
+  //   setProgressData((prevProgress) => [...prevProgress, newProgress]);
+  // };
+
+  // const removeWorkoutLog = (logId: string) => {
+  //   setExerciseLogs((prevLogs) => prevLogs.filter((log) => log.id !== logId));
+  // };
+
+  // const removeGoal = async (goalId: string) => {
+  //   setGoals((prevGoals) => prevGoals.filter((goal) => goal.id !== goalId));
+  // };

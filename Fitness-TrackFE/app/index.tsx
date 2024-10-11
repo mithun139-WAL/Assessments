@@ -6,7 +6,6 @@ import { ThemedText } from "@/components/commonComponents/ThemedText";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useRouter } from "expo-router";
 import { useAuth } from "../context/AuthContext";
-import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const signUpScreen = () => {

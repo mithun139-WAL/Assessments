@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Button, FlatList } from "react-native";
-import { useTracking } from "../context/TrackingContext";
+import { useTracking } from "../../context/TrackingContext";
 import * as Location from "expo-location";
 import MapView, { Polyline, UrlTile } from "react-native-maps";
-import { ThemedView } from "./commonComponents/ThemedView";
-import { ThemedText } from "./commonComponents/ThemedText";
+import { ThemedView } from "../commonComponents/ThemedView";
+import { ThemedText } from "../commonComponents/ThemedText";
 
 const generateUUID = () => {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {

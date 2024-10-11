@@ -56,7 +56,7 @@ const SetGoalsTab = () => {
 
       <FlatList
         data={goals}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <ThemedView style={styles.goalItem}>
             <ThemedView
@@ -183,6 +183,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 15,
     textAlign: "center",
+    color: "#000",
   },
   input: {
     borderWidth: 1,

@@ -43,12 +43,13 @@ const LogWorkoutTab: React.FC<{ selectedDate: Date }> = ({ selectedDate }) => {
         weight: weight,
         date: formatDate(selectedDate),
       };
-      updateProgress({
+      const progressDate = {
         date: newLog.date,
         totalWeight: newLog.weight * newLog.reps,
         totalReps: newLog.reps,
-      });
+      }
       addWorkoutLog(newLog);
+      updateProgress(progressDate);
       setModalVisible(false);
       setSelectedMuscle(undefined);
       setSelectedExercise(undefined);
@@ -68,7 +69,7 @@ const LogWorkoutTab: React.FC<{ selectedDate: Date }> = ({ selectedDate }) => {
       <ThemedView style={{ paddingVertical: 30 }}>
         <FlatList
           data={filteredLogs}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <ThemedView style={styles.logItem}>
               <ThemedView
@@ -146,8 +147,8 @@ const LogWorkoutTab: React.FC<{ selectedDate: Date }> = ({ selectedDate }) => {
           {selectedExercise && (
             <>
               <ThemedView style={styles.counterContainer}>
-                <ThemedText>Weight (lbs): </ThemedText>
-                <ThemedView style={{flexDirection: "row", alignItems: "center"}}>
+                <ThemedText style={{color: "#000"}}>Weight (lbs): </ThemedText>
+                <ThemedView style={{flexDirection: "row", alignItems: "center", backgroundColor: "#fff"}}>
                   <Pressable
                     onPress={() => setWeight((prev) => Math.max(0, prev - 1))}
                   >
@@ -161,8 +162,8 @@ const LogWorkoutTab: React.FC<{ selectedDate: Date }> = ({ selectedDate }) => {
               </ThemedView>
 
               <ThemedView style={styles.counterContainer}>
-                <ThemedText>Reps: </ThemedText>
-                <ThemedView style={{flexDirection: "row", alignItems: "center"}}>
+                <ThemedText style={{color: "#000"}}>Reps: </ThemedText>
+                <ThemedView style={{flexDirection: "row", alignItems: "center", backgroundColor: "#fff"}}>
                   <Pressable
                     onPress={() => setReps((prev) => Math.max(0, prev - 1))}
                   >
@@ -238,10 +239,11 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: "500",
     marginBottom: 15,
     textAlign: "center",
     letterSpacing: 1.2,
+    color: "#000",
   },
   counterContainer: {
     flexDirection: "row",
@@ -249,11 +251,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginVertical: 20,
     paddingHorizontal: 15,
+    backgroundColor: "#fff"
 
   },
   counterValue: {
     marginHorizontal: 15,
     fontSize: 18,
+    color: "#000",
   },
   saveButton: {
     backgroundColor: Colors.aqua,
@@ -267,7 +271,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontSize: 14,
   },
-  icon: {backgroundColor: Colors.blue, color: Colors.white, padding: 5, borderRadius: 30},
+  icon: {backgroundColor: Colors.aqua, color: Colors.white, padding: 5, borderRadius: 30},
   closeButton: {
     borderRadius: 30,
     justifyContent: "center",

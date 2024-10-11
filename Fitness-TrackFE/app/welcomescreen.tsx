@@ -62,10 +62,13 @@ const WelcomeScreen = () => {
         >
           Skip Setup
         </ThemedText>
+        <ThemedText style={styles.ignore}>
+          Ignore this for now and skip!!
+        </ThemedText>
       </ThemedView>
     </ThemedView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -108,6 +111,13 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontSize: 16,
     color: "#007bff",
+    textAlign: "center",
+  },
+  ignore: {
+    fontSize: 8,
+    fontWeight: "300",
+    color: "orange",
+    marginTop: 20,
     textAlign: "center",
   },
 });

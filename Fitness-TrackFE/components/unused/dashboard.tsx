@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet, Pressable, Dimensions } from "react-native";
 import ProgressPhotos from "@/app/ProgressPhotos";
-import LocationBased from "@/components/LocationBased";
+import LocationBased from "@/components/unused/LocationBased";
 import { ThemedText } from "@/components/commonComponents/ThemedText";
 import { Colors } from "@/constants/Colors";
 import { ThemedView } from "@/components/commonComponents/ThemedView";
