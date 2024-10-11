@@ -38,54 +38,54 @@ export default function RootLayout() {
     <AuthProvider>
       <WorkoutProvider>
         <TrackingProvider>
-        <BookmarkProvider>
-          <ThemeProvider
-            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-          >
-            <Stack initialRouteName="index">
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="welcomescreen"
-                options={{ headerShown: false, headerTitle: "" }}
-              />
-              <Stack.Screen
-                name="WorkOutList"
-                options={{
-                  headerTransparent: true,
-                  headerTitle: "",
-                  headerTintColor: "#fff",
-                }}
-              />
-              <Stack.Screen
-                name="customworkout"
-                options={{
-                  headerTitle: "Add Workout",
-                }}
-              />
-              <Stack.Screen
-                name="(tabs)"
-                options={{
-                  headerShown: false,
-                  headerTransparent: true,
-                  headerTitle: "",
-                }}
-              />
-              <Stack.Screen
-                name="ProgressPhotos"
-                options={{
-                  headerTitle: "Gallery",
-                }}
-              />
-              <Stack.Screen
-                name="PhotoDisplay"
-                options={{
-                  headerTitle: "",
-                  headerTransparent: true
-                }}
-              />
-            </Stack>
-          </ThemeProvider>
-        </BookmarkProvider>
+          <BookmarkProvider>
+            <ThemeProvider
+              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+            >
+              <Stack initialRouteName="index">
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="welcomescreen"
+                  options={{ headerShown: false, headerTitle: "" }}
+                />
+                <Stack.Screen
+                  name="WorkOutList"
+                  options={{
+                    headerTransparent: true,
+                    headerTitle: "",
+                    headerTintColor: "#fff",
+                  }}
+                />
+                <Stack.Screen
+                  name="customworkout"
+                  options={{
+                    headerTitle: "Add Workout",
+                  }}
+                />
+                <Stack.Screen
+                  name="(tabs)"
+                  options={{
+                    headerShown: false,
+                    headerTransparent: true,
+                    headerTitle: "",
+                  }}
+                />
+                <Stack.Screen
+                  name="ProgressPhotos"
+                  options={{
+                    headerTitle: "Gallery",
+                  }}
+                />
+                <Stack.Screen
+                  name="PhotoDisplay"
+                  options={{
+                    headerTitle: "",
+                    headerTransparent: true,
+                  }}
+                />
+              </Stack>
+            </ThemeProvider>
+          </BookmarkProvider>
         </TrackingProvider>
       </WorkoutProvider>
     </AuthProvider>
