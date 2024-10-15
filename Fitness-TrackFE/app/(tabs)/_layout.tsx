@@ -36,15 +36,6 @@ const TabLayout = () => {
             </ThemedView>
           );
         },
-        headerRight: () => {
-          return (
-            <ThemedView>
-              <Pressable onPress={() => router.navigate("/settings")}>
-                <TabBarIcon name="settings" style={{ right: 20 }} />
-              </Pressable>
-            </ThemedView>
-          );
-        },
       }}
     >
       <Tabs.Screen

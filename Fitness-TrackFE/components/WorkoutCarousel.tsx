@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   exerciseName: {
-    color: "#fff",
+    color: Colors.white,
     fontSize: 18,
     fontWeight: "bold",
     letterSpacing: 1,
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.blue,
   },
   inactiveDot: {
-    backgroundColor: "#C0C0C0",
+    backgroundColor: Colors.grey,
   },
 });
 

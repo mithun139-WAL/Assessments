@@ -6,6 +6,7 @@ import { CommonButton } from "@/components/commonComponents/CommonButton";
 import { useAuth } from "@/context/AuthContext";
 import { TabBarIcon } from "@/components/commonComponents/TabBarIcon";
 import { router } from 'expo-router';
+import { Colors } from "@/constants/Colors";
 
 const Settings: React.FC = () => {
   const { signOutUser } = useAuth();
@@ -15,10 +16,11 @@ const Settings: React.FC = () => {
   const [weightModalVisible, setWeightModalVisible] = useState<boolean>(false);
 
   const handleSignOut = async () => {
-    await signOutUser();
-    router.replace("/");
+    const success = await signOutUser();
+    if (success){
+      router.replace("/");
+    }
   };
-
 
   const handleHeightChange = (newHeight: string) => {
     setHeight(newHeight);
@@ -121,7 +123,7 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     marginTop: 20,
-    backgroundColor: "#dc3545",
+    backgroundColor: Colors.error,
   },
   text: {
     paddingHorizontal: 5,

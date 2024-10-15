@@ -5,6 +5,7 @@ import { ThemedText } from "@/components/commonComponents/ThemedText";
 import { CommonButton } from "@/components/commonComponents/CommonButton";
 import CommonTextInput from "@/components/commonComponents/CommonTextInput";
 import { router } from "expo-router";
+import { Colors } from "@/constants/Colors";
 
 const getStarted = () => {
   const [name, setName] = useState("");
@@ -26,12 +27,6 @@ const getStarted = () => {
     validateFields();
   }, [name, email, password, confirmPassword]);
   const handleCreateAccount = () => {
-    console.log("Create Account Pressed", {
-      name,
-      email,
-      password,
-      confirmPassword,
-    });
     if (password !== confirmPassword) {
       alert("Passwords do not match");
     }
@@ -108,6 +103,6 @@ const styles = StyleSheet.create({
   text: {
     marginVertical: 30,
     borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    borderBottomColor: Colors.grey,
   },
 });

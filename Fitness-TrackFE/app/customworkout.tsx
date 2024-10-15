@@ -21,6 +21,7 @@ import {
   categoryOptions,
 } from "../data/customWorkoutData";
 import CommonDropDown from "@/components/commonComponents/CommonDropDown";
+import { Colors } from "@/constants/Colors";
 
 const CustomWorkout = () => {
   const { addWorkout } = useWorkout();
@@ -151,7 +152,7 @@ const CustomWorkout = () => {
             <TabBarIcon
               name="close"
               size={16}
-              style={styles.removeButtonText}
+              style={styles.addButtonText}
             />
           </Pressable>
         </ThemedView>
@@ -181,9 +182,9 @@ const CustomWorkout = () => {
   );
 
   return (
-    <ThemedView style={{ flex: 1 }}>
+    <ThemedView style={styles.container}>
       <FlatList
-        contentContainerStyle={styles.container}
+        contentContainerStyle={styles.formContainer}
         data={[{}]}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => <ThemedView />}
@@ -258,7 +259,8 @@ const CustomWorkout = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  container: { flex: 1 },
+  formContainer: {
     flexGrow: 1,
     padding: 20,
   },
@@ -269,7 +271,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    borderBottomColor: Colors.grey,
     padding: 10,
     marginBottom: 15,
     width: "70%",
@@ -290,23 +292,20 @@ const styles = StyleSheet.create({
   },
   addButton: {
     marginTop: 10,
-    backgroundColor: "#007bff",
+    backgroundColor: Colors.blue,
     padding: 10,
     borderRadius: 30,
     alignItems: "center",
     right: 10,
   },
   addButtonText: {
-    color: "#fff",
+    color: Colors.white,
   },
   removeButton: {
     marginHorizontal: 15,
-    backgroundColor: "#ff6347",
+    backgroundColor: Colors.orange,
     padding: 5,
     borderRadius: 30,
-  },
-  removeButtonText: {
-    color: "#fff",
   },
 });
 

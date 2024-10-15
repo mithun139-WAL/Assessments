@@ -1,6 +1,7 @@
 import React from 'react';
 import { TextInput, StyleSheet, TextInputProps } from 'react-native';
 import { ThemedText } from './ThemedText';
+import { Colors } from '../../constants/Colors';
 
 interface CommonTextInputProps extends TextInputProps {
   label?: string;
@@ -24,16 +25,16 @@ export default CommonTextInput;
 const styles = StyleSheet.create({
   input: {
     height: 50,
-    borderColor: "#ddd",
+    borderColor: Colors.darkgray,
     borderBottomWidth: 1,
     paddingHorizontal: 20,
     marginBottom: 10,
     fontSize: 16,
-    color: "#66BB6A",
+    color: Colors.blue,
   },
   label: {
     fontSize: 16,
     marginBottom: 5,
-    color: "#388E3C",
+    color: Colors.black,
   },
 });

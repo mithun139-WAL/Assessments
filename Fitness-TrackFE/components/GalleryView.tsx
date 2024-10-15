@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { ThemedView } from "./commonComponents/ThemedView";
 import { ThemedText } from "./commonComponents/ThemedText";
+import { Colors } from '../constants/Colors';
 
 const GalleryView: React.FC = () => {
   const { photos } = useTracking();
@@ -18,9 +19,7 @@ const GalleryView: React.FC = () => {
 
   if (photos.length === 0) {
     return (
-      <ThemedView
-        style={{ flex: 1, justifyContent: "center", alignContent: "center" }}
-      >
+      <ThemedView style={styles.container}>
         <ThemedText style={styles.errorText}>No Photos Available</ThemedText>
       </ThemedView>
     );
@@ -43,13 +42,14 @@ const GalleryView: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: "center", alignContent: "center" },
   thumbnail: {
     width: 100,
     height: 100,
     margin: 1,
   },
   errorText: {
-    color: "#ccc",
+    color: Colors.grey,
     fontSize: 18,
     textAlign: "center",
     marginTop: 20,

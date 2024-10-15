@@ -110,7 +110,7 @@ const LogWorkoutTab: React.FC<{ selectedDate: Date }> = ({ selectedDate }) => {
             style={styles.closeButton}
             onPress={() => setModalVisible(false)}
           >
-            <TabBarIcon name="close-circle-outline" style={{ color: "#000" }} />
+            <TabBarIcon name="close-circle-outline" style={{ color: Colors.black }} />
           </Pressable>
           <ThemedText style={styles.modalTitle}>Log New Workout</ThemedText>
 
@@ -147,8 +147,8 @@ const LogWorkoutTab: React.FC<{ selectedDate: Date }> = ({ selectedDate }) => {
           {selectedExercise && (
             <>
               <ThemedView style={styles.counterContainer}>
-                <ThemedText style={{color: "#000"}}>Weight (lbs): </ThemedText>
-                <ThemedView style={{flexDirection: "row", alignItems: "center", backgroundColor: "#fff"}}>
+                <ThemedText style={{color: Colors.black}}>Weight (lbs): </ThemedText>
+                <ThemedView style={styles.weightContainer}>
                   <Pressable
                     onPress={() => setWeight((prev) => Math.max(0, prev - 1))}
                   >
@@ -162,8 +162,8 @@ const LogWorkoutTab: React.FC<{ selectedDate: Date }> = ({ selectedDate }) => {
               </ThemedView>
 
               <ThemedView style={styles.counterContainer}>
-                <ThemedText style={{color: "#000"}}>Reps: </ThemedText>
-                <ThemedView style={{flexDirection: "row", alignItems: "center", backgroundColor: "#fff"}}>
+                <ThemedText style={{color: Colors.black}}>Reps: </ThemedText>
+                <ThemedView style={styles.weightContainer}>
                   <Pressable
                     onPress={() => setReps((prev) => Math.max(0, prev - 1))}
                   >
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   },
   logDetails: {},
   logDate: {
-    color: "#777",
+    color: Colors.darkgray,
     fontSize: 12,
   },
   addButton: {
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   addButtonText: {
-    color: "#fff",
+    color: Colors.white,
     fontWeight: "400",
     fontSize: 16,
   },
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.white,
     margin: 20,
     borderRadius: 10,
   },
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: "center",
     letterSpacing: 1.2,
-    color: "#000",
+    color: Colors.black,
   },
   counterContainer: {
     flexDirection: "row",
@@ -251,13 +251,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginVertical: 20,
     paddingHorizontal: 15,
-    backgroundColor: "#fff"
+    backgroundColor: Colors.white
 
   },
+  weightContainer:{flexDirection: "row", alignItems: "center", backgroundColor:Colors.white},
   counterValue: {
     marginHorizontal: 15,
     fontSize: 18,
-    color: "#000",
+    color: Colors.black,
   },
   saveButton: {
     backgroundColor: Colors.aqua,

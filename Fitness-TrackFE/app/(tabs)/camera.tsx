@@ -8,14 +8,7 @@ import PhotoPreview from "@/components/PhotoPreview";
 import { useTracking } from "@/context/TrackingContext";
 import { router } from "expo-router";
 import { Colors } from "@/constants/Colors";
-
-type Photo = {
-  id: string;
-  uri: string;
-  date: string;
-  title: string;
-  address?: string;
-};
+import { Photo } from "@/exercise";
 
 const generateUUID = () => {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
@@ -40,7 +33,7 @@ const Camera = () => {
   if (!permission.granted) {
     return (
       <ThemedView style={styles.permissionContainer}>
-        <ThemedText style={{ textAlign: "center", paddingVertical: 20 }}>
+        <ThemedText style={styles.permissionText}>
           set permissons to show Camera
         </ThemedText>
         <Pressable onPress={requestPermission} style={styles.permissionButton}>
@@ -152,7 +145,7 @@ const styles = StyleSheet.create({
   },
   captureButton: { flex: 1, flexDirection: 'row', justifyContent: "space-around", alignItems: 'center' },
   captureText: {
-    color: "#fff",
+    color: Colors.white,
   },
   permissionContainer: {
     flex: 1,
@@ -160,7 +153,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   permissionButton: { backgroundColor: "orange", padding: 10, width: "50%" },
-  permissionText: { color: "white", textAlign: "center" },
+  permissionText: { color: Colors.white, textAlign: "center"  },
   photoItem: {
     flexDirection: "row",
     justifyContent: "space-between",

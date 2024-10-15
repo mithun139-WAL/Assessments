@@ -5,10 +5,9 @@ import { Colors } from "@/constants/Colors";
 import GalleryView from "../components/GalleryView";
 
 const ProgressPhotos: React.FC = () => {
-  
   return (
     <ThemedView style={styles.container}>
-      <GalleryView /> 
+      <GalleryView />
     </ThemedView>
   );
 };

@@ -16,27 +16,14 @@ import { TabBarIcon } from "@/components/commonComponents/TabBarIcon";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useBookmarks } from "@/context/BookmarkContext";
 import { useWorkout } from "@/context/WorkoutContext";
+import { Exercise } from "@/exercise";
 
 const { width, height } = Dimensions.get("window");
-
-type Exercise = {
-  id: string;
-  name: string;
-  force: string | null;
-  level: string;
-  mechanic: string | null;
-  equipment: string | null;
-  primaryMuscles: string[];
-  secondaryMuscles: string[];
-  instructions: string[];
-  category: string;
-  images: any[];
-};
 
 const WorkOutList = () => {
   const { exerciseId } = useLocalSearchParams<{ exerciseId: string }>();
   const { workouts } = useWorkout();
-  
+
   const selectedExercise =
     exercises.find((exercise) => exercise.id === exerciseId) ||
     workouts.find((workout) => workout.id === exerciseId);
@@ -84,9 +71,9 @@ const WorkOutList = () => {
           </Pressable>
         ) : (
           <Image
-              source={require("../assets/images/logo-black.png")}
-              style={styles.mainImage}
-            />
+            source={require("../assets/images/logo-black.png")}
+            style={styles.mainImage}
+          />
         )}
 
         <LinearGradient
@@ -104,7 +91,7 @@ const WorkOutList = () => {
                   : "bookmark-outline"
               }
               size={18}
-              style={{ fontWeight: "600", color: Colors.white }}
+              style={styles.iconStyle}
             />
           </Pressable>
           <ThemedText style={styles.exerciseTitle}>
@@ -218,4 +205,5 @@ const styles = StyleSheet.create({
     color: Colors.white,
     letterSpacing: 1,
   },
+  iconStyle: { fontWeight: "600", color: Colors.white }
 });

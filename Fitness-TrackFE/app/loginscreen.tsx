@@ -7,6 +7,7 @@ import CommonTextInput from "@/components/commonComponents/CommonTextInput";
 import { router } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Colors } from "@/constants/Colors";
 
 const loginScreen = () => {
   const [email, setEmail] = useState("");
@@ -25,14 +26,12 @@ const loginScreen = () => {
 
   const handleLogin = async () => {
     try {
-      console.log("error", error);
-      await signIn(email, password);
-      if (error === null) {
-        router.navigate("/welcomescreen");
+      const success = await signIn(email, password);
+      if (success) {
+        router.replace("/welcomescreen");
+        setEmail("");
+        setPassword("");
       }
-      setEmail("");
-      setPassword("");
-      console.log("error after signin", error);
     } catch (err) {
       console.error("Login error:", err);
       Alert.alert("Login Failed", "Invalid email or password.");
@@ -41,9 +40,7 @@ const loginScreen = () => {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedView
-        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-      >
+      <ThemedView style={styles.formContainer}>
         <CommonTextInput
           style={styles.input}
           placeholder="Email"
@@ -69,7 +66,7 @@ const loginScreen = () => {
             marginTop: 20,
             paddingVertical: 16,
           }}
-          textStyle={{ fontSize: 14, color: "#fff" }}
+          textStyle={styles.textStyle}
           disabled={disabled || loading}
         />
       </ThemedView>
@@ -85,7 +82,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     justifyContent: "space-between",
   },
-
+  formContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
   buttonContainer: {
     paddingVertical: 50,
   },
@@ -98,4 +95,5 @@ const styles = StyleSheet.create({
     color: "red",
     marginBottom: 10,
   },
+  textStyle: { fontSize: 14, color: Colors.white },
 });

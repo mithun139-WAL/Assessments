@@ -8,63 +8,68 @@ import {
 import { ThemedText } from "@/components/commonComponents/ThemedText";
 import { ThemedView } from "@/components/commonComponents/ThemedView";
 import { exercises } from "../../data/exercises";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import workoutData from "../../data/workout.json";
 import WorkoutCarousel from "@/components/WorkoutCarousel";
 import { Dimensions, ScrollView, FlatList } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Exercise } from "@/exercise";
+import { weeklyRoutine } from "@/data/customWorkoutData";
 
-type Exercise = {
-  id: string;
-  name: string;
-  force: string | null;
-  level: string;
-  mechanic: string | null;
-  equipment: string | null;
-  primaryMuscles: string[];
-  secondaryMuscles: string[];
-  instructions: string[];
-  category: string;
-  images: ImageSourcePropType[];
-};
+const getExercisesForDay = (
+  day: number,
+  goal: string | string[],
+  experience: string | string[]
+): Exercise[] => {
+  const targetMuscles = weeklyRoutine[day as keyof typeof weeklyRoutine];
 
-const { width } = Dimensions.get("window");
+  const equipmentFilter = (exercise: Exercise) => {
+    if (goal === "maintain_fitness") {
+      return exercise.equipment === "body only";
+    } else if (goal === "lose_weight") {
+      return ["dumbbell", "machine", "cable"].includes(
+        exercise.equipment || ""
+      );
+    }
+    return true;
+  };
 
-const weeklyRoutine: Record<number, string[]> = {
-  0: ["Shoulders", "Hamstrings"],
-  1: ["Adductors", "Abdominals"],
-  2: ["Biceps", "Chest"],
-  3: ["Quadriceps", "Calves"],
-  4: ["Traps", "Glutes", "Lats"],
-  5: ["Forearms", "Triceps"],
-  6: ["Stretching", "Cardio"],
-};
+  const experienceFilter = (exercise: Exercise) => {
+    if (experience === "beginner") return exercise.level === "beginner";
+    if (experience === "intermediate")
+      return ["beginner", "intermediate"].includes(exercise.level);
+    return true;
+  };
 
-const getExercisesForDay = (day: number): Exercise[] => {
-  const targetMuscles = weeklyRoutine[day];
-  const filteredExercises = exercises.filter((exercise: Exercise) =>
+  return exercises.filter((exercise: Exercise) =>
     targetMuscles.some((muscle) => {
       const lowerCaseMuscle = muscle.toLowerCase();
       return (
-        exercise.primaryMuscles.includes(lowerCaseMuscle) ||
-        exercise.secondaryMuscles.includes(lowerCaseMuscle) ||
-        exercise.category.toLowerCase() === lowerCaseMuscle
+        (exercise.primaryMuscles.includes(lowerCaseMuscle) ||
+          exercise.secondaryMuscles.includes(lowerCaseMuscle) ||
+          exercise.category.toLowerCase() === lowerCaseMuscle) &&
+        equipmentFilter(exercise) &&
+        experienceFilter(exercise)
       );
     })
   );
-  return filteredExercises;
 };
-
-export default function HomeScreen() {
+const HomeScreen = () => {
   const { exercises, plans } = workoutData;
   const [currentDay, setCurrentDay] = useState<number>(new Date().getDay());
   const [dailyExercises, setDailyExercises] = useState<Exercise[]>([]);
+  const { goal = "maintain_fitness", experience = "beginner" } =
+    useLocalSearchParams();
 
   useEffect(() => {
-    const exercisesForToday = getExercisesForDay(currentDay).slice(0, 20);
+    const exercisesForToday = getExercisesForDay(
+      currentDay,
+      goal,
+      experience
+    ).slice(0, 20);
     setDailyExercises(exercisesForToday);
-  }, [currentDay]);
+  }, [currentDay, goal, experience]);
 
   const renderItem = ({ item }: { item: Exercise }) => (
     <Pressable
@@ -97,14 +102,6 @@ export default function HomeScreen() {
             {item.name}
           </ThemedText>
           <ThemedText style={styles.value}>{item.category} </ThemedText>
-          {/* <ThemedText style={styles.value}>
-            {item?.primaryMuscles.join(" ")}{" "}
-            {item?.secondaryMuscles && item?.secondaryMuscles.length > 0 && (
-              <ThemedText style={styles.value}>
-                {item?.secondaryMuscles.join(" ")}
-              </ThemedText>
-            )}
-          </ThemedText> */}
         </LinearGradient>
       </ThemedView>
     </Pressable>
@@ -119,7 +116,7 @@ export default function HomeScreen() {
         <ThemedText style={styles.subtitle}>
           Today's Workout Recommendations
         </ThemedText>
-        <ThemedView style={{ flex: 1 }}>
+        <ThemedView style={styles.container}>
           <FlatList
             data={dailyExercises}
             keyExtractor={(item) => item.id}
@@ -128,7 +125,10 @@ export default function HomeScreen() {
           />
           <ThemedView>
             <ThemedText style={styles.title}>Looking for more ?</ThemedText>
-            <Pressable style={{paddingBottom: 30}} onPress={() => router.navigate("/(tabs)/workouts")}>
+            <Pressable
+              style={{ paddingBottom: 30 }}
+              onPress={() => router.navigate("/(tabs)/workouts")}
+            >
               <ThemedText style={styles.explore}>Explore Workouts</ThemedText>
             </Pressable>
           </ThemedView>
@@ -137,7 +137,7 @@ export default function HomeScreen() {
       <WorkoutCarousel exercises={exercises} plans={plans} />
     </ScrollView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -197,10 +197,12 @@ const styles = StyleSheet.create({
   },
   value: {
     fontWeight: "normal",
-    color: "#fff",
+    color: Colors.white,
     textTransform: "uppercase",
     fontSize: 16,
     letterSpacing: 1,
     paddingHorizontal: 10,
   },
 });
+
+export default HomeScreen;

@@ -6,7 +6,7 @@ import SetGoalsTab from "@/components/SetGoalsTab";
 import LogWorkoutTab from "../../components/LogWorkoutTab";
 import TrackProgressTab from "@/components/TrackProgressTab";
 import { TabBarIcon } from "../../components/commonComponents/TabBarIcon";
-import { Colors } from '../../constants/Colors';
+import { Colors } from "../../constants/Colors";
 
 export default function WorkoutLoggingScreen() {
   const [activeTab, setActiveTab] = useState<string>("Log Workout");
@@ -23,7 +23,7 @@ export default function WorkoutLoggingScreen() {
     setSelectedDate(nextDate);
   };
 
-  const renderActiveTab = (date: Date) => {    
+  const renderActiveTab = (date: Date) => {
     switch (activeTab) {
       case "Log Workout":
         return <LogWorkoutTab selectedDate={date} />;
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "200",
     paddingHorizontal: 5,
-    paddingTop: 5, 
+    paddingTop: 5,
   },
   headerContainer: {
     marginBottom: 16,

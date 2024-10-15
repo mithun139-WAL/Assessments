@@ -1,7 +1,7 @@
 import { ThemedText } from "@/components/commonComponents/ThemedText";
 import { ThemedView } from "@/components/commonComponents/ThemedView";
 import React, { useState } from "react";
-import { Dimensions, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { router } from "expo-router";
 import CommonDropDown from "@/components/commonComponents/CommonDropDown";
 import { CommonButton } from "../components/commonComponents/CommonButton";
@@ -13,12 +13,10 @@ const WelcomeScreen = () => {
   const [goalOpen, setGoalOpen] = useState<boolean>(false);
   const [experienceOpen, setExperienceOpen] = useState<boolean>(false);
 
-  const { width, height } = Dimensions.get("window");
-
   return (
     <ThemedView style={styles.container}>
       <ThemedView
-        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        style={styles.formContainer}
       >
         <ThemedText style={styles.title}>
           Welcome to Fitness Tracker!
@@ -53,12 +51,21 @@ const WelcomeScreen = () => {
         <CommonButton
           title="Get Started"
           buttonStyle={styles.button}
-          textStyle={{ color: "#fff" }}
-          onPress={() => router.replace("/(tabs)")}
+          textStyle={{ color: Colors.white }}
+          onPress={() =>
+            router.replace({
+              pathname: "/(tabs)/",
+              params: { goal, experience },
+            })}
         />
         <ThemedText
           style={styles.skipLink}
-          onPress={() => router.replace("/(tabs)")}
+          onPress={() =>
+            router.replace({
+              pathname: "/(tabs)/",
+              params: { goal: "maintain_fitness", experience: "beginner" },
+            })
+          }
         >
           Skip Setup
         </ThemedText>
@@ -72,6 +79,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "space-between",
   },
+  formContainer:{ flex: 1, justifyContent: "center", alignItems: "center" },
   title: {
     fontSize: 22,
     textTransform: "uppercase",
@@ -90,13 +98,13 @@ const styles = StyleSheet.create({
   text: {
     marginVertical: 30,
     borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    borderBottomColor: Colors.grey,
   },
   subText: {
     fontSize: 14,
     textAlign: "center",
     marginBottom: 30,
-    color: "gray",
+    color: Colors.grey,
   },
   input: {
     width: "80%",
@@ -107,7 +115,7 @@ const styles = StyleSheet.create({
   skipLink: {
     marginTop: 20,
     fontSize: 16,
-    color: "#007bff",
+    color: Colors.aqua,
     textAlign: "center",
   },
   ignore: {

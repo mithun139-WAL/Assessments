@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1011510856798",
+    "project_id": "fitnesstracker-b1398",
+    "storage_bucket": "fitnesstracker-b1398.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1011510856798:android:53a6f8697dcda19a5c38cf",
+        "android_client_info": {
+          "package_name": "com.auth.fitnesstrack139821"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_zupvU0RZoseos_S_zaxpy-IzD3KKuWo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

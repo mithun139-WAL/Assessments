@@ -22,6 +22,8 @@ export const Colors = {
   white: '#f5f5f5',
   aqua: '#4B9CD3',
   blue: '#1A85A3',
-  grey: '#E5E4E2',
-  error: '#ff3333'
+  grey: '#CCCCCC',
+  error: '#ed3447',
+  orange: "#ff6347",
+  darkgray: "#aaaaaa"
 };

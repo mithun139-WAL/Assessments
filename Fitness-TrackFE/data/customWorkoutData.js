@@ -41,3 +41,14 @@ export const categoryOptions = [
   { label: "Weighted Bodyweight", value: "weighted bodyweight" },
   { label: "Assisted Bodyweight", value: "assisted bodyweight" },
 ];
+
+
+export const weeklyRoutine = {
+  0: ["Shoulders", "Hamstrings"],
+  1: ["Adductors", "Abdominals"],
+  2: ["Biceps", "Chest"],
+  3: ["Quadriceps", "Calves"],
+  4: ["Traps", "Glutes", "Lats"],
+  5: ["Forearms", "Triceps"],
+  6: ["Stretching", "Cardio"],
+};

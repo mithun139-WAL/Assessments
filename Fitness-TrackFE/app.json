@@ -7,7 +7,7 @@
     "icon": "./assets/images/logo.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "googleServicesFile": "./google-services.json",
+    "googleServicesFile": "./services/google-services.json",
     "splash": {
       "image": "./assets/images/logo.png",
       "resizeMode": "contain",
@@ -15,14 +15,18 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.mithunchakravarthi139.FitnessTrackFE"
+      "bundleIdentifier": "com.mithunchakravarthi139.FitnessTrackFE",
+      "infoPlist": {
+        "UIBackgroundModes": ["fetch", "remote-notification"]
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-logo.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.mithunchakravarthi139.FitnessTrackFE"
+      "package": "com.mithunchakravarthi139.FitnessTrackFE",
+      "permissions": ["NOTIFICATIONS"]
     },
     "web": {
       "bundler": "metro",

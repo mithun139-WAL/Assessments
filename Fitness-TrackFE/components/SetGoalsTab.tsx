@@ -59,9 +59,7 @@ const SetGoalsTab = () => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <ThemedView style={styles.goalItem}>
-            <ThemedView
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
+            <ThemedView style={styles.goalContainer}>
               <ThemedText style={styles.goalName}>{item.name}</ThemedText>
               <Pressable onPress={() => removeGoal(item.id)}>
                 <ThemedText style={styles.removeGoal}>
@@ -78,7 +76,7 @@ const SetGoalsTab = () => {
 
       <Pressable style={styles.addButton} onPress={() => setModalVisible(true)}>
         <ThemedText style={styles.addButtonText}>
-          <TabBarIcon name="add" style={{ color: "#fff" }} />
+          <TabBarIcon name="add" style={{ color: Colors.white }} />
         </ThemedText>
       </Pressable>
 
@@ -113,7 +111,7 @@ const SetGoalsTab = () => {
             <ThemedText style={styles.saveButtonText}>Add Goal</ThemedText>
           </Pressable>
           <Pressable style={styles.closeButton} onPress={handleClose}>
-            <TabBarIcon name="close-circle-outline" style={{ color: "#000" }} />
+            <TabBarIcon name="close-circle-outline" style={{ color: Colors.black }} />
           </Pressable>
         </ThemedView>
       </Modal>
@@ -131,6 +129,7 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     marginBottom: 10,
   },
+  goalContainer: { flexDirection: "row", justifyContent: "space-between" },
   goalItem: {
     padding: 15,
     marginVertical: 5,
@@ -141,7 +140,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   goalProgress: {
-    color: "#555",
+    color: Colors.darkgray,
   },
   removeGoal: {
     marginTop: 5,
@@ -166,7 +165,7 @@ const styles = StyleSheet.create({
     right: 10,
   },
   addButtonText: {
-    color: "#fff",
+    color: Colors.white,
     fontWeight: "400",
     fontSize: 30,
   },
@@ -174,7 +173,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.white,
     margin: 20,
     borderRadius: 10,
   },
@@ -183,11 +182,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 15,
     textAlign: "center",
-    color: "#000",
+    color: Colors.black,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: Colors.grey,
     borderRadius: 5,
     padding: 10,
     marginVertical: 20,
@@ -199,7 +198,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   saveButtonText: {
-    color: "#fff",
+    color: Colors.white,
     textAlign: "center",
     fontWeight: "bold",
   },

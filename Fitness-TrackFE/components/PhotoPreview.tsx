@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f0f0f0",
+    backgroundColor: Colors.white,
   },
   box: {
     width: "95%",
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     backgroundColor: Colors.white,
     elevation: 10,
-    shadowColor: "#000",
+    shadowColor: Colors.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 20,
   },
-  disabledButton: { backgroundColor: "#ccc", opacity: 0.3 },
+  disabledButton: { backgroundColor: Colors.grey, opacity: 0.3 },
   titleContainer: {
     width: "100%",
     justifyContent: "center",

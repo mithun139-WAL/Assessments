@@ -45,6 +45,18 @@ export default function RootLayout() {
               <Stack initialRouteName="index">
                 <Stack.Screen name="index" options={{ headerShown: false }} />
                 <Stack.Screen
+                  name="signupscreen"
+                  options={{
+                    headerTitle: "SignUp",
+                  }}
+                />
+                <Stack.Screen
+                  name="loginscreen"
+                  options={{
+                    headerTitle: "Login",
+                  }}
+                />
+                <Stack.Screen
                   name="welcomescreen"
                   options={{ headerShown: false, headerTitle: "" }}
                 />
@@ -53,7 +65,7 @@ export default function RootLayout() {
                   options={{
                     headerTransparent: true,
                     headerTitle: "",
-                    headerTintColor: "#fff",
+                    headerTintColor: Colors.white,
                   }}
                 />
                 <Stack.Screen

@@ -5,6 +5,7 @@ import { ThemedText } from "@/components/commonComponents/ThemedText";
 import { CommonButton } from "@/components/commonComponents/CommonButton";
 import CommonTextInput from "@/components/commonComponents/CommonTextInput";
 import { router } from "expo-router";
+import { Colors } from "../../constants/Colors";
 
 const loginScreen = () => {
   const [email, setEmail] = useState("");
@@ -20,13 +21,9 @@ const loginScreen = () => {
     validateFields();
   }, [email, password]);
   const handleLogin = () => {
-    console.log("Logged In", {
-      email,
-      password,
-    });
     setEmail("");
     setPassword("");
-    router.push('/(tabs)')
+    router.push("/(tabs)");
   };
 
   return (
@@ -52,7 +49,7 @@ const loginScreen = () => {
             marginTop: 20,
             paddingVertical: 16,
           }}
-          textStyle={{ fontSize: 14, color: '#fff' }}
+          textStyle={styles.textStyle}
           disabled={disabled}
         />
       </ThemedView>
@@ -74,4 +71,5 @@ const styles = StyleSheet.create({
   buttonContainer: {
     paddingHorizontal: 10,
   },
+  textStyle: { fontSize: 14, color: Colors.white },
 });

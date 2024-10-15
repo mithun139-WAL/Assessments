@@ -16,9 +16,26 @@ const SignUpScreen = () => {
 
   const { signUp, loading, error } = useAuth();
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
   const handleSignUp = async () => {
     if (!userName || !email || !password || !confirmPassword) {
       Alert.alert("All fields are required");
+      return;
+    }
+
+    if (!emailRegex.test(email)) {
+      Alert.alert("Error", "Please enter a valid email address");
+      return;
+    }
+
+    if (!passwordRegex.test(password)) {
+      Alert.alert(
+        "Error",
+        "Password must be at least 8 characters long, include uppercase, lowercase, number, and a special character"
+      );
       return;
     }
 
@@ -28,16 +45,16 @@ const SignUpScreen = () => {
     }
 
     try {
-      await signUp(userName, email, password);
-      console.log("Error", error)
-      
-      if (error === null) {
-        router.navigate("/loginscreen");
+      const success = await signUp(userName, email, password);
+      if (success) {
+        router.push("/loginscreen");
+        setUserName("");
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+      } else {
+        Alert.alert("Signup failed", error || "Please try again later.");
       }
-      setUserName("");
-      setEmail("");
-      setPassword("");
-      setConfirmPassword("");
     } catch (err) {
       console.error("Sign up error:", err);
       Alert.alert("Signup failed", "Please try again later.");
@@ -45,9 +62,7 @@ const SignUpScreen = () => {
   };
   return (
     <ThemedView style={[styles.container, { paddingTop: 50 }]}>
-      <ThemedView
-        style={{ alignItems: "center", justifyContent: "center", flex: 1 }}
-      >
+      <ThemedView style={styles.formContainer}>
         <CommonTextInput
           style={styles.input}
           placeholder="Enter UserName"
@@ -80,7 +95,7 @@ const SignUpScreen = () => {
         <CommonButton
           title={loading ? "Signing Up..." : "Get Started"}
           onPress={handleSignUp}
-          buttonStyle={{ backgroundColor: Colors.blue, marginVertical: 20 }}
+          buttonStyle={styles.buttonStyle}
           textStyle={{ fontSize: 18 }}
           disabled={loading}
         />
@@ -104,6 +119,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "space-between",
   },
+  formContainer: { alignItems: "center", justifyContent: "center", flex: 1 },
   title: {
     fontSize: 30,
     textTransform: "uppercase",
@@ -117,7 +133,7 @@ const styles = StyleSheet.create({
   text: {
     marginVertical: 30,
     borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    borderBottomColor: Colors.grey,
   },
   errorText: {
     color: "red",
@@ -128,4 +144,5 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     width: "90%",
   },
+  buttonStyle: { backgroundColor: Colors.blue, marginVertical: 20 },
 });

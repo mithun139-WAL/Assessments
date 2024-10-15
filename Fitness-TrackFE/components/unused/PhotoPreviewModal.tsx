@@ -71,7 +71,7 @@ const PhotoPreviewModal: React.FC<PhotoPreviewModalProps> = ({
         </Pressable>
 
         <Pressable onPress={()=>(console.log("Pressed")
-        )}><ThemedText style={{color: "#000"}}>Button</ThemedText></Pressable>
+        )}><ThemedText style={{color: Colors.black}}>Button</ThemedText></Pressable>
       </ThemedView>
 
       <Image source={{ uri: item.uri }} style={styles.fullscreenImage} />
@@ -123,10 +123,10 @@ const styles = StyleSheet.create({
     width: width,
     height: width * 1.2,
     borderRadius: 15,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.white,
     margin: 10,
     elevation: 5,
-    shadowColor: "#000",
+    shadowColor: Colors.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
@@ -139,10 +139,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 10,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.white,
   },
   cardTitle: {
-    color: "#000",
+    color: Colors.black,
     fontWeight: "bold",
     fontSize: 16,
   },
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.blue,
   },
   inactiveDot: {
-    backgroundColor: "#C0C0C0",
+    backgroundColor: Colors.grey,
   },
 });
 

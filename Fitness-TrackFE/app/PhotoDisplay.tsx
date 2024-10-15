@@ -7,6 +7,7 @@ import { ThemedText } from "@/components/commonComponents/ThemedText";
 import { useLocalSearchParams, router } from "expo-router";
 import { TabBarIcon } from "@/components/commonComponents/TabBarIcon";
 import { useHeaderHeight } from "@react-navigation/elements";
+import { Colors } from "@/constants/Colors";
 
 const { width, height } = Dimensions.get("window");
 
@@ -145,7 +146,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   errorText: {
-    color: "#ccc",
+    color: Colors.grey,
     fontSize: 18,
     textAlign: "center",
     marginTop: 20,

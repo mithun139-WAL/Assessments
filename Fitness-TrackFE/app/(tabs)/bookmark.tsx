@@ -7,33 +7,8 @@ import { useBookmarks } from "@/context/BookmarkContext";
 import { TabBarIcon } from "@/components/commonComponents/TabBarIcon";
 import { router } from "expo-router";
 import { useWorkout } from "@/context/WorkoutContext";
-
-type Exercise = {
-  id: string;
-  name: string;
-  force: string | null;
-  level: string;
-  mechanic: string | null;
-  equipment: string | null;
-  primaryMuscles: string[];
-  secondaryMuscles: string[];
-  instructions: string[];
-  category: string;
-  images: any[];
-};
-
-type Workout = {
-  id: string;
-  name: string;
-  force?: string;
-  level: string;
-  mechanic?: string;
-  equipment?: string;
-  primaryMuscles: string[];
-  secondaryMuscles?: string[];
-  instructions: string[];
-  category: string;
-};
+import { Exercise, Workout } from "@/exercise";
+import { Colors } from "@/constants/Colors";
 
 const BookmarkScreen = () => {
   const { bookmarkedExercises, toggleBookmark } = useBookmarks();
@@ -121,7 +96,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: "#aaa",
+    color: Colors.darkgray,
     textAlign: "center",
   },
   listContainer: {
@@ -143,11 +118,11 @@ const styles = StyleSheet.create({
   },
   category: {
     fontSize: 10,
-    color: "#666",
+    color: Colors.darkgray,
   },
   level: {
     fontSize: 12,
-    color: "#aaa",
+    color: Colors.darkgray,
     textTransform: "capitalize",
   },
   thumbnail: {
