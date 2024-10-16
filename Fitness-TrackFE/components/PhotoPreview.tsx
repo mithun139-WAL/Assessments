@@ -14,11 +14,7 @@ import { Colors } from "@/constants/Colors";
 import { CameraCapturedPicture } from "expo-camera";
 import * as Location from "expo-location";
 import CommonTextInput from "./commonComponents/CommonTextInput";
-
-type Coordinates = {
-  latitude: number;
-  longitude: number;
-};
+import { Coordinates } from "@/exercise";
 
 const PhotoPreview = ({
   photo,

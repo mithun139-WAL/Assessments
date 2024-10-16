@@ -1,19 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-type Photo = {
-  id: string;
-  uri: string;
-  date: string;
-  title: string;
-  address?: string;
-};
-
-type TrackingContextType = {
-  photos: Photo[];
-  addPhoto: (photo: Photo) => void;
-  removePhoto: (id: string) => void;
-};
+import { Photo, TrackingContextType } from "@/exercise";
 
 const TrackingContext = createContext<TrackingContextType | undefined>(
   undefined
@@ -34,7 +21,6 @@ export const TrackingProvider: React.FC<{ children: React.ReactNode }> = ({
         if (storedPhotos) {
           setPhotos(JSON.parse(storedPhotos));
         }
-
       } catch (error) {
         console.error("Error fetching tracking data:", error);
       }
@@ -68,9 +54,7 @@ export const TrackingProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <TrackingContext.Provider
-      value={{ photos, addPhoto, removePhoto, }}
-    >
+    <TrackingContext.Provider value={{ photos, addPhoto, removePhoto }}>
       {children}
     </TrackingContext.Provider>
   );

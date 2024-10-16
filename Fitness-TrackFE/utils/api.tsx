@@ -1,6 +1,6 @@
-const BASE_URL = "http://10.0.2.2:8005/api";
+const BASE_URL = "https://fitness-be-70jr.onrender.com";
 
-const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout: number = 10000) => {
+const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout: number = 30000) => {
   const controller = new AbortController();
   const { signal } = controller;
   
@@ -93,3 +93,4 @@ const api = {
 };
 
 export { api };
+

@@ -7,60 +7,14 @@ import React, {
   useState,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-type ExerciseLog = {
-  id: number;
-  muscle: string | undefined;
-  exercise: string;
-  sets: number;
-  reps: number;
-  weight: number;
-  date: string;
-};
-
-type ProgressData = {
-  date: string;
-  totalWeight: number;
-  totalReps: number;
-};
-
-type Goal = {
-  id: number;
-  name: string;
-  target: number;
-  progress: number;
-};
-
-type Workout = {
-  id: string;
-  name: string;
-  force?: string;
-  level: string;
-  mechanic?: string;
-  equipment?: string;
-  primaryMuscles: string[];
-  secondaryMuscles?: string[];
-  instructions: string[];
-  category: string;
-};
-
-type WorkoutContextType = {
-  exerciseLogs: ExerciseLog[];
-  progressData: ProgressData[];
-  goals: Goal[];
-  selectedDate: Date;
-  setSelectedDate: (date: Date) => void;
-  addWorkoutLog: (log: Omit<ExerciseLog, "id">) => void;
-  removeWorkoutLog: (logId: number) => void;
-  updateProgress: (progress: ProgressData) => void;
-  setGoal: (goal: Omit<Goal, "id">) => void;
-  removeGoal: (goalId: number) => void;
-  updateGoalProgress: (exerciseLog: ExerciseLog) => void;
-  workouts: Workout[];
-  addWorkout: (workout: Workout) => void;
-  removeWorkout: (id: string) => void;
-  loadWorkouts: () => Promise<void>;
-};
+import {
+  Action,
+  ExerciseLog,
+  Goal,
+  ProgressData,
+  Workout,
+  WorkoutContextType,
+} from "@/exercise";
 
 const initialState = {
   exerciseLogs: [] as ExerciseLog[],
@@ -69,13 +23,6 @@ const initialState = {
   workouts: [] as Workout[],
   selectedDate: new Date(),
 };
-
-type Action =
-  | { type: "SET_EXERCISE_LOGS"; payload: ExerciseLog[] }
-  | { type: "SET_PROGRESS_DATA"; payload: ProgressData[] }
-  | { type: "SET_GOALS"; payload: Goal[] }
-  | { type: "SET_WORKOUTS"; payload: Workout[] }
-  | { type: "SET_SELECTED_DATE"; payload: Date };
 
 const reducer = (state: typeof initialState, action: Action) => {
   switch (action.type) {
@@ -96,7 +43,7 @@ const reducer = (state: typeof initialState, action: Action) => {
 
 const WorkoutContext = createContext<WorkoutContextType | undefined>(undefined);
 
-const API_URL = "http://10.0.2.2:8005/api";
+const API_URL = "https://fitness-be-70jr.onrender.com/api";
 
 export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -347,53 +294,3 @@ export const useWorkout = () => {
   }
   return context;
 };
-
-// useEffect(() => {
-//   const fetchWorkoutData = async () => {
-//     const logs = await AsyncStorage.getItem("exerciseLogs");
-//     const progress = await AsyncStorage.getItem("progressData");
-//     const savedGoals = await AsyncStorage.getItem("goals");
-
-//     if (logs) setExerciseLogs(JSON.parse(logs));
-//     if (progress) setProgressData(JSON.parse(progress));
-//     if (savedGoals) setGoals(JSON.parse(savedGoals));
-//   };
-
-//   fetchWorkoutData();
-// }, []);
-
-// useEffect(() => {
-//   AsyncStorage.setItem("exerciseLogs", JSON.stringify(exerciseLogs));
-// }, [exerciseLogs]);
-
-// useEffect(() => {
-//   AsyncStorage.setItem("progressData", JSON.stringify(progressData));
-// }, [progressData]);
-
-// useEffect(() => {
-//   AsyncStorage.setItem("goals", JSON.stringify(goals));
-// }, [goals]);
-
-// const addWorkoutLog = (log: Omit<ExerciseLog, "id">) => {
-//   const newLog = { ...log, id: generateUUID() };
-//   setExerciseLogs((prevLogs) => [...prevLogs, newLog]);
-//   updateGoalProgress(newLog);
-// };
-
-// const setGoal = async (goal: Omit<Goal, "id">) => {
-//   const newGoal = { ...goal, id: generateUUID() };
-//   setGoals((prevGoals) => [...prevGoals, newGoal]);
-// };
-
-// const updateProgress = async (progress: ProgressData) => {
-//   const newProgress = { ...progress, id: generateUUID() };
-//   setProgressData((prevProgress) => [...prevProgress, newProgress]);
-// };
-
-// const removeWorkoutLog = (logId: string) => {
-//   setExerciseLogs((prevLogs) => prevLogs.filter((log) => log.id !== logId));
-// };
-
-// const removeGoal = async (goalId: string) => {
-//   setGoals((prevGoals) => prevGoals.filter((goal) => goal.id !== goalId));
-// };

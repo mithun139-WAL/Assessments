@@ -8,22 +8,7 @@ import React, {
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "../utils/api";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  password: string;
-}
-
-interface AuthContextProps {
-  userInfo: User | null;
-  loading: boolean;
-  error: string | null;
-  signIn: (email: string, password: string) => Promise<boolean>;
-  signUp: (name: string, email: string, password: string) => Promise<boolean>;
-  signOutUser: () => Promise<boolean>;
-}
+import { AuthContextProps, User } from "@/exercise";
 
 const AuthContext = createContext<AuthContextProps>({
   userInfo: null,
@@ -35,7 +20,6 @@ const AuthContext = createContext<AuthContextProps>({
 });
 
 export const useAuth = () => useContext(AuthContext);
-
 interface AuthProviderProps {
   children: ReactNode;
 }
@@ -62,8 +46,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.post("/user/login", { email, password });
-      
+      const response = await api.post("/api/user/login", { email, password });
       const userData: User = response;
       setUserInfo(userData);
       await AsyncStorage.setItem("@user", JSON.stringify(userData));
@@ -78,9 +61,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const signUp = async (name: string, email: string, password: string) => {
     setLoading(true);
-    setError(null);    
+    setError(null);
     try {
-      const response = await api.post("/user/signup", {
+      const response = await api.post("/api/user/signup", {
         name,
         email,
         password,

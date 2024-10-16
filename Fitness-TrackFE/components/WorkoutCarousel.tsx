@@ -10,38 +10,9 @@ import { ThemedView } from "./commonComponents/ThemedView";
 import { ThemedText } from "./commonComponents/ThemedText";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from '../constants/Colors';
+import { DayExercise, Exercises, WorkoutCarouselProps } from "@/exercise";
 
 const { width } = Dimensions.get("window");
-
-type Exercise = {
-  id: number;
-  name: string;
-  video: string;
-};
-
-type DayExercise = {
-  id: number;
-  weight: number;
-  sets: number;
-  unit: string;
-};
-
-type Day = {
-  id: number;
-  name: string;
-  exercises: DayExercise[];
-};
-
-type Plan = {
-  id: number;
-  name: string;
-  days: Day[];
-};
-
-type WorkoutCarouselProps = {
-  exercises: Exercise[];
-  plans: Plan[];
-};
 
 const getCurrentDayIndex = () => {
   const currentDay = new Date().getDay();
@@ -69,7 +40,7 @@ const WorkoutCarousel: React.FC<WorkoutCarouselProps> = ({
       .map((dayExercise) =>
         exercises.find((exer) => exer.id === dayExercise.id)
       )
-      .filter((exercise): exercise is Exercise => exercise !== undefined);
+      .filter((exercise): exercise is Exercises => exercise !== undefined);
   };
 
   const renderPagination = (dataLength: number) => (
@@ -103,7 +74,7 @@ const WorkoutCarousel: React.FC<WorkoutCarouselProps> = ({
               data={mapDayExercisesToExercises(selectedPlan.days[0].exercises)}
               onSnapToItem={(index) => setActiveIndex(index)}
               scrollAnimationDuration={1000}
-              renderItem={({ item }: { item: Exercise }) => (
+              renderItem={({ item }: { item: Exercises }) => (
                 <ThemedView style={styles.carouselItem}>
                   <Video
                     style={styles.video}
@@ -144,7 +115,7 @@ const WorkoutCarousel: React.FC<WorkoutCarouselProps> = ({
               )}
               scrollAnimationDuration={1000}
               onSnapToItem={(index) => setActiveIndex(index)}
-              renderItem={({ item }: { item: Exercise }) => (
+              renderItem={({ item }: { item: Exercises }) => (
                 <ThemedView style={styles.carouselItem}>
                   <Video
                     style={styles.video}

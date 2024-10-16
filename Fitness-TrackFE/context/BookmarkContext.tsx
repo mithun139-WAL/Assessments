@@ -1,3 +1,4 @@
+import { BookmarkContextType } from "@/exercise";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, {
   createContext,
@@ -6,11 +7,6 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
-
-type BookmarkContextType = {
-  bookmarkedExercises: string[];
-  toggleBookmark: (id: string) => void;
-};
 
 const BookmarkContext = createContext<BookmarkContextType | undefined>(
   undefined
