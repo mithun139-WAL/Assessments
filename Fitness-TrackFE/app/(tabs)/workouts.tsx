@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import {
   StyleSheet,
   FlatList,
@@ -18,6 +18,7 @@ import { Colors } from "@/constants/Colors";
 import { useWorkout } from "../../context/WorkoutContext";
 import { debounce } from "lodash";
 import { Exercise, Workout } from "@/exercise";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 const { width } = Dimensions.get("window");
 
@@ -29,30 +30,38 @@ const WorkoutScreen = () => {
 
   const { bookmarkedExercises, toggleBookmark } = useBookmarks();
   const { workouts, removeWorkout } = useWorkout();
+  const { sendNotification, expoPushToken, notification } = usePushNotifications();
 
-  const handleSearch = debounce((text: string) => {
+  const handleSearch = useCallback(
+    debounce((text: string) => {
+      if (text.length > 2) {
+        const filteredData = exercises.filter(
+          (exercise) =>
+            [
+              exercise.name,
+              exercise.level,
+              exercise.force,
+              exercise.equipment,
+              exercise.category,
+            ].some((field) =>
+              field?.toLowerCase().includes(text.toLowerCase())
+            ) ||
+            exercise.primaryMuscles.some((muscle) =>
+              muscle.toLowerCase().includes(text.toLowerCase())
+            )
+        );
+        setFilteredExercises(filteredData);
+      } else {
+        setFilteredExercises(exercises);
+      }
+    }, 300),
+    [exercises]
+  );
+
+  const onChangeSearchText = (text: string) => {
     setSearchText(text);
-    if (text.length > 2) {
-      const filteredData = exercises.filter(
-        (exercise) =>
-          [
-            exercise.name,
-            exercise.level,
-            exercise.force,
-            exercise.equipment,
-            exercise.category,
-          ].some((field) =>
-            field?.toLowerCase().includes(text.toLowerCase())
-          ) ||
-          exercise.primaryMuscles.some((muscle) =>
-            muscle.toLowerCase().includes(text.toLowerCase())
-          )
-      );
-      setFilteredExercises(filteredData);
-    } else {
-      setFilteredExercises(exercises);
-    }
-  }, 50);
+    handleSearch(text);
+  };
 
   const isExercise = (item: any): item is Exercise => {
     return item.images && Array.isArray(item.images);
@@ -71,12 +80,21 @@ const WorkoutScreen = () => {
     [toggleBookmark, removeWorkout, bookmarkedExercises]
   );
 
+  useEffect(() => {
+    if (workouts.length === 0) {
+      sendNotification("Wanna create a new Workout?", "Your workout list is empty. Add a workout to get started!");
+    }            
+  }, [workouts]);
+
   return (
     <ThemedView style={styles.container}>
       <MenuBar activeTab={activeTab} setActiveTab={setActiveTab} />
       {activeTab === "Browse" && (
         <>
-          <SearchBar searchText={searchText} handleSearch={handleSearch} />
+          <SearchBar
+            searchText={searchText}
+            handleSearch={onChangeSearchText}
+          />
           <FlatList
             data={filteredExercises}
             renderItem={renderExerciseItem}
@@ -143,9 +161,7 @@ const ExerciseItem = memo(
         {isExercise(item) ? (
           <ThemedText style={styles.exerciseName}>{item.name}</ThemedText>
         ) : (
-          <ThemedView
-            style={styles.trashContainer}
-          >
+          <ThemedView style={styles.trashContainer}>
             <ThemedText style={styles.exerciseName}>{item.name}</ThemedText>
             <Pressable onPress={() => removeWorkout(item.id)}>
               <TabBarIcon name="trash-outline" size={18} />
@@ -215,7 +231,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  trashContainer:{ flexDirection: "row", justifyContent: "space-between" },
+  trashContainer: { flexDirection: "row", justifyContent: "space-between" },
   menuBar: {
     flexDirection: "row",
     justifyContent: "space-around",

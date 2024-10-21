@@ -26,7 +26,8 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.mithunchakravarthi139.FitnessTrackFE",
-      "permissions": ["NOTIFICATIONS"]
+      "permissions": ["NOTIFICATIONS"],
+      "googleServicesFile": "./services/google-services.json"
     },
     "web": {
       "bundler": "metro",

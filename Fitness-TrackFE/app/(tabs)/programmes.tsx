@@ -7,10 +7,12 @@ import LogWorkoutTab from "../../components/LogWorkoutTab";
 import TrackProgressTab from "@/components/TrackProgressTab";
 import { TabBarIcon } from "../../components/commonComponents/TabBarIcon";
 import { Colors } from "../../constants/Colors";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 export default function WorkoutLoggingScreen() {
   const [activeTab, setActiveTab] = useState<string>("Log Workout");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
   const handlePrevDay = () => {
     const previousDate = new Date(selectedDate);
@@ -21,6 +23,19 @@ export default function WorkoutLoggingScreen() {
     const nextDate = new Date(selectedDate);
     nextDate.setDate(selectedDate.getDate() + 1);
     setSelectedDate(nextDate);
+  };
+
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+
+  const handleConfirm = (date: Date) => {
+    setSelectedDate(date);
+    hideDatePicker();
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
   };
 
   const renderActiveTab = (date: Date) => {
@@ -43,22 +58,24 @@ export default function WorkoutLoggingScreen() {
           <Pressable onPress={handlePrevDay}>
             <TabBarIcon name="arrow-back" size={24} style={styles.arrow} />
           </Pressable>
-          <ThemedView style={styles.dateContainer}>
-            <ThemedText style={styles.day}>
-              {selectedDate.getDate().toString().padStart(2, "0")}
-            </ThemedText>
-            <ThemedText style={styles.dateText}>
-              {selectedDate.toLocaleDateString("en-US", {
-                month: "long",
-                year: "numeric",
-              })}
-            </ThemedText>
-            <ThemedText style={styles.dateText}>
-              {selectedDate.toLocaleDateString("en-US", {
-                weekday: "long",
-              })}
-            </ThemedText>
-          </ThemedView>
+          <Pressable onPress={() => showDatePicker()}>
+            <ThemedView style={styles.dateContainer}>
+              <ThemedText style={styles.day}>
+                {selectedDate.getDate().toString().padStart(2, "0")}
+              </ThemedText>
+              <ThemedText style={styles.dateText}>
+                {selectedDate.toLocaleDateString("en-US", {
+                  month: "long",
+                  year: "numeric",
+                })}
+              </ThemedText>
+              <ThemedText style={styles.dateText}>
+                {selectedDate.toLocaleDateString("en-US", {
+                  weekday: "long",
+                })}
+              </ThemedText>
+            </ThemedView>
+          </Pressable>
           <Pressable onPress={handleNextDay}>
             <TabBarIcon name="arrow-forward" size={24} style={styles.arrow} />
           </Pressable>
@@ -77,6 +94,12 @@ export default function WorkoutLoggingScreen() {
         ))}
       </ThemedView>
       {renderActiveTab(selectedDate)}
+      <DateTimePickerModal
+        isVisible={isDatePickerVisible}
+        mode="date"
+        onConfirm={handleConfirm}
+        onCancel={hideDatePicker}
+      />
     </ThemedView>
   );
 }

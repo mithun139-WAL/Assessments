@@ -1,10 +1,5 @@
-import React, { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  Image,
-  Pressable,
-  ImageSourcePropType,
-} from "react-native";
+import React, { useEffect, useState, useCallback } from "react";
+import { StyleSheet, Image, Pressable } from "react-native";
 import { ThemedText } from "@/components/commonComponents/ThemedText";
 import { ThemedView } from "@/components/commonComponents/ThemedView";
 import { exercises } from "../../data/exercises";
@@ -12,10 +7,12 @@ import { router, useLocalSearchParams } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import workoutData from "../../data/workout.json";
 import WorkoutCarousel from "@/components/WorkoutCarousel";
-import { Dimensions, ScrollView, FlatList } from "react-native";
+import { ScrollView, FlatList } from "react-native";
 import { Colors } from "../../constants/Colors";
 import { Exercise } from "@/exercise";
 import { weeklyRoutine } from "@/data/customWorkoutData";
+import registerNNPushToken from "native-notify";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 const getExercisesForDay = (
   day: number,
@@ -61,6 +58,7 @@ const HomeScreen = () => {
   const [dailyExercises, setDailyExercises] = useState<Exercise[]>([]);
   const { goal = "maintain_fitness", experience = "beginner" } =
     useLocalSearchParams();
+  const { scheduleDailyReminder } = usePushNotifications();
 
   useEffect(() => {
     const exercisesForToday = getExercisesForDay(
@@ -70,6 +68,12 @@ const HomeScreen = () => {
     ).slice(0, 20);
     setDailyExercises(exercisesForToday);
   }, [currentDay, goal, experience]);
+
+  useEffect(() => {
+    scheduleDailyReminder();
+  }, []);
+
+  registerNNPushToken(24264, "s4P1ziwZhvu0kGe3xDJJNI");
 
   const renderItem = ({ item }: { item: Exercise }) => (
     <Pressable

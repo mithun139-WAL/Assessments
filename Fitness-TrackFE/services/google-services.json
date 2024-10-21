@@ -1,26 +1,36 @@
 {
   "project_info": {
-    "project_number": "1011510856798",
-    "project_id": "fitnesstracker-b1398",
-    "storage_bucket": "fitnesstracker-b1398.appspot.com"
+    "project_number": "110581947519",
+    "project_id": "fitnesstrack-b139821",
+    "storage_bucket": "fitnesstrack-b139821.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1011510856798:android:53a6f8697dcda19a5c38cf",
+        "mobilesdk_app_id": "1:110581947519:android:75709cb57383060fb4b34a",
         "android_client_info": {
-          "package_name": "com.auth.fitnesstrack139821"
+          "package_name": "com.mithunchakravarthi139.FitnessTrackFE"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "110581947519-j684i1big5sssh3idltfebkkh68rfq4k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyA_zupvU0RZoseos_S_zaxpy-IzD3KKuWo"
+          "current_key": "AIzaSyD42nOJOwO3D4RKpY_Nj0WB6peRSq5BO8g"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "110581947519-j684i1big5sssh3idltfebkkh68rfq4k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
