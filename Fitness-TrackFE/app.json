@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Fitness-TrackFE",
+    "name": "Fitness-Track",
     "slug": "Fitness-TrackFE",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,7 +9,7 @@
     "userInterfaceStyle": "automatic",
     "googleServicesFile": "./services/google-services.json",
     "splash": {
-      "image": "./assets/images/logo.png",
+      "image": "./assets/images/splash-logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -22,11 +22,11 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-logo.png",
+        "foregroundImage": "./assets/images/logo.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.mithunchakravarthi139.FitnessTrackFE",
-      "permissions": ["NOTIFICATIONS"],
+      "permissions": ["NOTIFICATIONS", "INTERNET", "CAMERA"],
       "googleServicesFile": "./services/google-services.json"
     },
     "web": {
