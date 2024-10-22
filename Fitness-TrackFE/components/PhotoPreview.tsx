@@ -140,8 +140,6 @@ const PhotoPreview = ({
     setLocationButtonState("fetched");
   };
 
-  console.log("Address", displayCurrentAddress);
-
   return (
     <SafeAreaView style={styles.container}>
       <ThemedView style={styles.box}>

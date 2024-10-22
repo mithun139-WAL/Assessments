@@ -77,7 +77,6 @@ export const usePushNotifications = (): PushNotificationState => {
       });
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response);
       });
     return () => {
       Notifications.removeNotificationSubscription(
@@ -112,7 +111,6 @@ export const usePushNotifications = (): PushNotificationState => {
           repeats: true,
         },
       });
-      console.log('Daily notification scheduled');
     } catch (error) {
       console.error('Error scheduling notification:', error);
     }
